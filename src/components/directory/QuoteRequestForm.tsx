@@ -12,7 +12,7 @@ import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   ContactFields,
@@ -26,7 +26,7 @@ import { FormValues, formSchema } from "./schema";
 
 interface QuoteRequestFormProps {
   businessId?: string;
-  businessEmail?: string;
+  businessEmail?: string; // Kept for backward compatibility
   onSubmitSuccess?: () => void;
   preselectedCity?: string;
   onSelectAnotherCity?: (formData: FormValues) => void;
@@ -35,7 +35,6 @@ interface QuoteRequestFormProps {
 
 export const QuoteRequestForm = ({
   businessId,
-  businessEmail,
   onSubmitSuccess,
   preselectedCity,
   onSelectAnotherCity,
@@ -65,8 +64,14 @@ export const QuoteRequestForm = ({
     },
   });
 
+  // Ensure city is set when preselectedCity changes
+  useEffect(() => {
+    if (preselectedCity && form.getValues('city') !== preselectedCity) {
+      form.setValue('city', preselectedCity);
+    }
+  }, [preselectedCity, form]);
+
   const onSubmit = async (formData: FormValues) => {
-    console.log("Starting form submission with data:", formData);
     setIsSubmitting(true);
 
     try {
@@ -76,8 +81,12 @@ export const QuoteRequestForm = ({
       const validBusinessId =
         businessId && uuidRegex.test(businessId) ? businessId : null;
 
-      console.log("Preparing data for Supabase insertion...");
-      const { data, error } = await supabase
+      // Ensure city is valid
+      if (!formData.city) {
+        throw new Error("City is required");
+      }
+
+      const { error } = await supabase
         .from("quote_requests")
         .insert({
           business_id: validBusinessId,
@@ -98,22 +107,11 @@ export const QuoteRequestForm = ({
           original_city: formData.city || "",
           status: "pending",
           lead_status: "new",
-        })
-        .select();
-
-      console.log("Supabase response:", { data, error });
+        });
 
       if (error) {
-        console.error("Supabase error details:", {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint,
-        });
         throw error;
       }
-
-      console.log("Quote request submitted successfully:", data);
 
       toast({
         title: "Success!",
@@ -127,19 +125,12 @@ export const QuoteRequestForm = ({
       if (onSubmitSuccess) {
         onSubmitSuccess();
       }
-    } catch (error: any) {
-      console.error("Detailed error information:", {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-        stack: error.stack,
-      });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to submit quote request";
 
       toast({
         title: "Error",
-        description:
-          error.message || "Failed to submit quote request. Please try again.",
+        description: errorMessage || "Failed to submit quote request. Please try again.",
         variant: "destructive",
       });
     } finally {

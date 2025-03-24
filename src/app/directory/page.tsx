@@ -1,14 +1,15 @@
 'use client'
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
 import { DirectoryLayout } from "@/components/directory/DirectoryLayout";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Directory = () => {
-  const { city } = useParams();
+  const params = useParams();
+  const city = typeof params.city === 'string' ? params.city : Array.isArray(params.city) ? params.city[0] : '';
   const router = useRouter();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,50 +21,28 @@ const Directory = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        console.log("Starting city fetch...");
-        let allCitiesData: string[] = [];
-        let lastId: string | null = null;
-        let hasMore = true;
+        const { data, error } = await supabase
+          .from('tree_service_companies')
+          .select('city')
+          .not('city', 'is', null)
+          .neq('city', '')
+          .order('city');
 
-        while (hasMore) {
-          let query = supabase
-            .from('tree_service_companies')
-            .select('id, city')
-            .not('city', 'is', null)
-            .neq('city', '')
-            .order('id')
-            .limit(100);
-
-          if (lastId) {
-            query = query.gt('id', lastId);
-          }
-
-          const { data, error } = await query;
-
-          if (error) {
-            console.error('Error fetching cities:', error);
-            break;
-          }
-
-          if (!data || data.length === 0) {
-            hasMore = false;
-            break;
-          }
-
-          const processedChunk = data
-            .map(item => item.city?.trim())
-            .filter((city): city is string => Boolean(city));
-
-          allCitiesData = [...allCitiesData, ...processedChunk];
-          lastId = data[data.length - 1].id;
+        if (error) {
+          console.error('Error fetching cities:', error);
+          setIsLoadingCities(false);
+          return;
         }
 
         const uniqueCitiesMap = new Map<string, string>();
-        
-        allCitiesData.forEach(city => {
-          const lowerCity = city.toLowerCase();
+
+        data.forEach(item => {
+          const cityValue = item.city?.trim();
+          if (!cityValue) return;
+
+          const lowerCity = cityValue.toLowerCase();
           if (!uniqueCitiesMap.has(lowerCity)) {
-            const properCity = city
+            const properCity = cityValue
               .split(' ')
               .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
               .join(' ');
@@ -86,42 +65,34 @@ const Directory = () => {
   const { data: companies = [], isLoading: companiesLoading } = useQuery({
     queryKey: ["companies", city, sortBy, sortOrder],
     queryFn: async () => {
-      let query = supabase
+      if (!city) return [];
+
+      const query = supabase
         .from("tree_service_companies")
         .select("*")
-        .eq("city", city);
+        .eq("city", city)
+        .not('business_name', 'is', null);
+
+      // Apply sorting at database level when possible
+      if (sortBy === 'name') {
+        query.order('business_name', { ascending: sortOrder === 'asc' });
+      } else if (sortBy === 'rating') {
+        query.order('google_rating', { ascending: sortOrder === 'asc', nullsFirst: sortOrder === 'asc' });
+      }
 
       const { data: allCompanies, error: fetchError } = await query;
-      
+
       if (fetchError) throw fetchError;
 
-      const uniqueCompanies = (allCompanies || []).filter(
-        (company, index, self) =>
-          index === self.findIndex((c) => c.business_name === company.business_name)
-      );
-
-      if (sortBy === 'rating') {
-        const ratedCompanies = uniqueCompanies.filter(c => c.google_rating !== null);
-        const unratedCompanies = uniqueCompanies.filter(c => c.google_rating === null);
-
-        ratedCompanies.sort((a, b) => {
-          if (!a.google_rating || !b.google_rating) return 0;
-          return sortOrder === 'asc' ? 
-            a.google_rating - b.google_rating : 
-            b.google_rating - a.google_rating;
-        });
-
-        unratedCompanies.sort((a, b) => 
-          a.business_name.localeCompare(b.business_name)
-        );
-
-        return [...ratedCompanies, ...unratedCompanies];
-      } else {
-        return uniqueCompanies.sort((a, b) => {
-          const comparison = a.business_name.localeCompare(b.business_name);
-          return sortOrder === 'asc' ? comparison : -comparison;
-        });
-      }
+      // De-duplicate by business name
+      const uniqueBusinessNames = new Set<string>();
+      return (allCompanies || []).filter(company => {
+        if (!company.business_name || uniqueBusinessNames.has(company.business_name)) {
+          return false;
+        }
+        uniqueBusinessNames.add(company.business_name);
+        return true;
+      });
     },
     enabled: !!city,
   });

@@ -5,7 +5,7 @@ export const formSchema = z.object({
   phone: z.string().optional(),
   email: z.string().optional(),
   streetAddress: z.string().optional(),
-  city: z.string().optional(),
+  city: z.string().min(1, "City is required"),
   serviceType: z.string().optional(),
   treeCount: z.string().optional(),
   treeHeight: z.string().optional(),

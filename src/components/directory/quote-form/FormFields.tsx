@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../schema";
 
@@ -118,6 +118,12 @@ const LocationFields = ({
   preselectedCity,
   onSelectAnotherCity,
 }: LocationFieldsProps) => {
+  useEffect(() => {
+    if (preselectedCity && !form.getValues('city')) {
+      form.setValue('city', preselectedCity);
+    }
+  }, [preselectedCity, form]);
+
   return (
     <div className="space-y-4">
       <FormField
@@ -147,18 +153,20 @@ const LocationFields = ({
             <FormControl>
               <div className="space-y-2">
                 <Input
-                  value={field.value}
-                  readOnly
-                  className="border-2 border-forest-600 bg-gray-50"
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  className="border-2 border-forest-600 focus-visible:ring-forest-600"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full border-2 border-forest-600 hover:bg-forest-100"
-                  onClick={onSelectAnotherCity}
-                >
-                  Select Another City
-                </Button>
+                {onSelectAnotherCity && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-2 border-forest-600 hover:bg-forest-100"
+                    onClick={onSelectAnotherCity}
+                  >
+                    Select Another City
+                  </Button>
+                )}
               </div>
             </FormControl>
             <FormMessage />
@@ -173,8 +181,6 @@ const ServiceFields = ({
   form,
   onServiceTypeChange,
 }: FormFieldProps & { onServiceTypeChange: (value: string) => void }) => {
-  const [serviceType, setServiceType] = useState("");
-
   return (
     <div className="space-y-4">
       <FormField
@@ -186,7 +192,6 @@ const ServiceFields = ({
             <Select
               onValueChange={(value) => {
                 field.onChange(value);
-                setServiceType(value);
                 onServiceTypeChange(value);
               }}
               defaultValue={field.value}
@@ -392,7 +397,7 @@ const DescriptionField = ({
         <FormMessage />
         {serviceType === "Other" && (
           <FormDescription>
-            Since you selected "Other", please provide details about the service
+            Since you selected &quot;Other&quot;, please provide details about the service
             you need.
           </FormDescription>
         )}
@@ -407,5 +412,6 @@ export {
   LocationFields,
   ServiceFields,
   TimeframeFields,
-  TreeDetailsFields,
+  TreeDetailsFields
 };
+

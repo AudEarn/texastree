@@ -1,3 +1,4 @@
+
 // 'use client'
 
 // import { useToast } from "@/hooks/use-toast";
@@ -187,39 +188,10 @@
 
 // export default Blog;
 
+import { fetchHomePagePosts } from "@/services/wordpress";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { fetchPosts } from "@/services/wordpress";
 import { Metadata } from "next";
-import Image from "next/image";
-
-interface WordPressPost {
-  id: number;
-  date: string;
-  title: {
-    rendered: string;
-  };
-  content: {
-    rendered: string;
-  };
-  excerpt: {
-    rendered: string;
-  };
-  featured_media: number;
-  _embedded?: {
-    "wp:featuredmedia"?: Array<{
-      source_url: string;
-    }>;
-    author?: Array<{
-      name: string;
-    }>;
-  };
-  categories: number[];
-  _embedded_categories?: Array<{
-    id: number;
-    name: string;
-  }>;
-}
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'Blog | TreeHub',
@@ -227,19 +199,14 @@ export const metadata: Metadata = {
 };
 
 export default async function Blog() {
-  const posts = await fetchPosts();
-  
+  // Use the optimized function that fetches featured and regular posts in parallel
+  const { featured: featuredPosts, regular: regularPosts } = await fetchHomePagePosts();
+
   const extractFirstImageUrl = (content: string) => {
     const imgRegex = /<img[^>]+src="([^">]+)"/;
     const match = content.match(imgRegex);
     return match ? match[1] : null;
   };
-
-  // Get the most recent post as featured
-  const featuredPosts = posts.slice(0, 1);
-
-  // Rest of the posts as regular posts
-  const regularPosts = posts.slice(1);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -278,9 +245,7 @@ export default async function Blog() {
                   <div className="w-full md:w-3/5">
                     <div className="aspect-[16/9] rounded-lg overflow-hidden shadow-lg">
                       {imageUrl ? (
-                        <Image
-                          height={200}
-                          width={200}
+                        <img
                           src={imageUrl}
                           alt={post.title.rendered}
                           className="w-full h-full object-cover"
@@ -308,13 +273,11 @@ export default async function Blog() {
                 <Link
                   key={post.id}
                   href={`/blog/${post.id}`}
-                  className="group"
+                  className="group cursor-pointer"
                 >
                   <div className="aspect-[4/3] rounded-lg overflow-hidden mb-3 shadow-lg">
                     {imageUrl ? (
-                      <Image
-                      height={200}
-                          width={200}
+                      <img
                         src={imageUrl}
                         alt={post.title.rendered}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -340,7 +303,7 @@ export default async function Blog() {
           </div>
         )}
 
-        {posts.length === 0 && (
+        {featuredPosts.length === 0 && regularPosts.length === 0 && (
           <div className="text-center text-gray-600 mt-8">
             No blog posts yet. Check back later!
           </div>
