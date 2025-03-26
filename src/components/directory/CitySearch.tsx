@@ -1,6 +1,7 @@
 'use client'
 
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 interface CitySearchProps {
   searchQuery: string;
@@ -43,13 +44,14 @@ export const CitySearch = ({
         <div className="max-w-md mx-auto bg-white border-2 border-forest-600 rounded-md shadow-lg">
           <div className="max-h-[300px] overflow-y-auto py-2">
             {filteredCities.map((city) => (
+                <Link key={city} href={`/directory/${city}`}>
               <button
-                key={city}
                 className="w-full px-4 py-2 text-left transition-all duration-300 hover:bg-[#39FF14] hover:text-black hover:font-bold hover:shadow-[0_0_20px_#39FF14] focus:outline-none focus:bg-[#39FF14] focus:text-black focus:font-bold focus:shadow-[0_0_20px_#39FF14]"
                 onClick={() => handleCitySelect(city)}
-              >
+                >
                 {city}
               </button>
+                  </Link>
             ))}
             {searchQuery && !filteredCities.includes(searchQuery) && (
               <button

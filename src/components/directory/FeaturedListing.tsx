@@ -75,7 +75,9 @@ export const FeaturedListing = ({ business }: FeaturedListingProps) => {
             <Image
               width={400}
               height={400}
-              src={featureImage}
+            //   src={featureImage}
+              src={`https://preview--treehub-automation.lovable.app${featureImage}`}
+            //   src={'https://preview--treehub-automation.lovable.app/lo' + `${featureImage}`}
               alt={`${business.business_name} featured image`}
               className="w-full h-full object-cover"
             />
