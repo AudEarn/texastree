@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
         domains: [
             'grey-herring-327677.hostingersite.com',
             'preview--treehub-automation.lovable.app',
+            'texastreeservicedirectory.com',
         ]
     }
 };

@@ -1,17 +1,9 @@
-'use client'
+"use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { texasCities } from "@/data/texas-cities";
-import { useState } from "react";
-import { CitySearch } from "../directory/CitySearch";
-import { QuoteRequestForm } from "../directory/QuoteRequestForm";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import Link from "next/link";
+import { useState } from "react";
 
 export const Hero = () => {
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
@@ -53,7 +45,9 @@ export const Hero = () => {
                 variant="outline"
                 className="border-forest-600 text-forest-600 hover:bg-forest-50 min-w-[240px]"
               >
-                <Link href="/directory">Select a Tree Service in Your City</Link>
+                <Link href="/directory">
+                  Select a Tree Service in Your City
+                </Link>
               </Button>
               <Button
                 size="lg"
@@ -68,33 +62,35 @@ export const Hero = () => {
       </section>
 
       <Dialog open={showQuoteDialog} onOpenChange={handleCloseDialog}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Get a Quick Quote</DialogTitle>
-          </DialogHeader>
-
-          {!selectedCity ? (
-            <div className="space-y-4">
-              <p className="text-center text-gray-600">
-                Please select your city to get started
-              </p>
-              <CitySearch
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                cities={texasCities}
-                onCitySelect={setSelectedCity}
+        <DialogContent className="sm:max-w-[600px] h-[90vh] bg-[#bed6fb] p-0 overflow-hidden">
+          <DialogHeader className="p-0">
+            <div className="w-full h-60 overflow-hidden">
+              <Image
+                height={300}
+                width={300}
+                src="https://texastreeservicedirectory.com/lovable-uploads/dd0aeb9a-2604-45fd-a461-1e2ee5d2df5c.png"
+                alt="Tree Service Quote Request"
+                className="w-full h-auto object-cover"
               />
             </div>
-          ) : (
-            <QuoteRequestForm
-              onSubmitSuccess={handleSubmitSuccess}
-              preselectedCity={selectedCity}
-              onSelectAnotherCity={handleSelectAnotherCity}
-              initialFormData={formData}
-            />
-          )}
+          </DialogHeader>
+
+          <div className="h-[calc(90vh-16rem)] w-full">
+            <iframe
+              src="https://tally.so/r/wQ4dNg"
+              className="w-full h-full border-0"
+              frameBorder="0"
+              marginHeight={0}
+              marginWidth={0}
+              title="Dry Cleaning Order Form"
+            >
+              Loading…
+            </iframe>
+          </div>
         </DialogContent>
       </Dialog>
     </>
   );
 };
+
+import Image from "next/image";
