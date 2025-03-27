@@ -1,7 +1,32 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import QuickQuoteModal from "../home/QuickQuoteModal";
+import { useState } from "react";
 
 export function Navbar() {
+    const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+      const [selectedCity, setSelectedCity] = useState<string>("");
+      const [searchQuery, setSearchQuery] = useState("");
+      const [formData, setFormData] = useState<any>(null);
+    
+      const handleCloseDialog = () => {
+        setShowQuoteDialog(false);
+        setSelectedCity("");
+        setSearchQuery("");
+        setFormData(null);
+      };
+    
+      const handleSelectAnotherCity = (currentFormData: any) => {
+        setFormData(currentFormData);
+        setSelectedCity("");
+      };
+    
+      const handleSubmitSuccess = () => {
+        handleCloseDialog();
+      };
+    
+      
   return (
     <nav className="border-b bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,15 +47,17 @@ export function Navbar() {
               Blog
             </Link>
             <Button
-              asChild
+
               variant="outline"
               className="border-forest-600 text-forest-600 hover:bg-forest-50"
+              onClick={() => setShowQuoteDialog(true)}
             >
-              <Link href="/claim-listing">List Your Business</Link>
+              List Your Business
             </Button>
           </div>
         </div>
       </div>
+      <QuickQuoteModal showQuoteDialog={showQuoteDialog} handleCloseDialog={handleCloseDialog} />
     </nav>
   );
 }
