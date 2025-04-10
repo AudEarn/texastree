@@ -3,7 +3,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { NewLeadType } from "../types";
@@ -17,25 +16,21 @@ export function AddLeadTypeForm() {
 
   const addLeadType = useMutation({
     mutationFn: async (newType: NewLeadType) => {
-      const { data: leadTypeData, error: leadTypeError } = await supabase
-        .from("lead_types")
-        .insert([newType])
-        .select()
-        .single();
-
-      if (leadTypeError) throw leadTypeError;
-
-      const { error: priceError } = await supabase
-        .from("lead_pricing_defaults")
-        .insert({
-          lead_type_id: leadTypeData.id,
-          lead_type: leadTypeData.name,
-          price: 50, // Default price
-        });
-
-      if (priceError) throw priceError;
-
-      return leadTypeData;
+      // Use the API route to bypass RLS policies
+      const response = await fetch('/api/admin/lead-types', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newType),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add lead type');
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leadTypes"] });
