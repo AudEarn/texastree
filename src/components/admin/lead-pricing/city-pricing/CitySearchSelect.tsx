@@ -21,7 +21,7 @@ export interface CitySearchSelectProps {
   onChange: (city: string) => void;
 }
 
-export function CitySearchSelect({ value, onChange }: CitySearchSelectProps) {
+export function CitySearchSelect({ value, onChange, disabled }: CitySearchSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -36,13 +36,14 @@ export function CitySearchSelect({ value, onChange }: CitySearchSelectProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full h-10 justify-between"
+          disabled={disabled}
         >
           {value || "Select city..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
           <CommandInput
             placeholder="Search cities..."

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react"; // Add this import
 import { useState } from "react";
 import { NewLeadType } from "../types";
 
@@ -131,7 +132,19 @@ export function AddLeadTypeForm() {
           </div>
         </div>
       </div>
-      <Button type="submit">Add Lead Type</Button>
+      <Button 
+        type="submit" 
+        disabled={addLeadType.isPending}
+      >
+        {addLeadType.isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Adding...
+          </>
+        ) : (
+          "Add Lead Type"
+        )}
+      </Button>
     </form>
   );
 }

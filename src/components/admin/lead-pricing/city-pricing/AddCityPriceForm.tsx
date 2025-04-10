@@ -8,8 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { LeadTypeData } from "../types";
 import { CitySearchSelect } from "./CitySearchSelect";
@@ -37,34 +37,38 @@ export function AddCityPriceForm({ leadTypes = [] }: AddCityPriceFormProps) {
 
   const addCityPrice = useMutation({
     mutationFn: async (newPrice: NewCityPrice) => {
-      try {
-        console.log("Submitting new price:", newPrice);
-        const { error } = await supabase.from("lead_pricing_by_city").insert([
-          {
-            city: newPrice.city,
-            lead_type: newPrice.lead_type,
-            price: newPrice.price,
-            lead_type_id: newPrice.lead_type_id,
-          },
-        ]);
-
-        if (error) {
-          console.error("Supabase error:", error);
-          throw error;
-        }
-      } catch (error: any) {
-        console.error("Error adding city price:", error);
-        throw new Error(error.message || "Failed to add city price");
+      // Ensure lead_type is correctly set before sending the request
+      if (!newPrice.lead_type.trim()) {
+        throw new Error("Lead type is required");
       }
+  
+      const response = await fetch('/api/admin/city-pricing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newPrice),
+      });
+  
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to add city price');
+      }
+  
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leadPricingByCity"] });
-      setNewCityPrice({
-        city: "",
-        lead_type: "",
-        price: 0,
-        lead_type_id: "",
-      });
+      setTimeout(() => {
+        setNewCityPrice({
+          city: "",
+          lead_type: "",
+          price: 0,
+          lead_type_id: "",
+        });
+      }, 1000);
+      
       toast({
         title: "Success",
         description: "City-specific price added successfully",
@@ -113,11 +117,12 @@ export function AddCityPriceForm({ leadTypes = [] }: AddCityPriceFormProps) {
   };
 
   return (
-    <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-4">
       <div className="flex-1">
         <CitySearchSelect
           value={newCityPrice.city}
           onChange={(city) => setNewCityPrice({ ...newCityPrice, city })}
+          disabled={addCityPrice.isPending}
         />
       </div>
 
@@ -125,8 +130,9 @@ export function AddCityPriceForm({ leadTypes = [] }: AddCityPriceFormProps) {
         <Select
           value={newCityPrice.lead_type_id}
           onValueChange={handleLeadTypeChange}
+          disabled={addCityPrice.isPending}
         >
-          <SelectTrigger>
+          <SelectTrigger className="h-10">
             <SelectValue placeholder="Select lead type" />
           </SelectTrigger>
           <SelectContent>
@@ -150,15 +156,24 @@ export function AddCityPriceForm({ leadTypes = [] }: AddCityPriceFormProps) {
             })
           }
           placeholder="Price"
-          className="w-full"
+          className="h-10"
+          disabled={addCityPrice.isPending}
         />
       </div>
 
       <Button
         onClick={handleAddCityPrice}
-        disabled={!isValidNewPrice(newCityPrice)}
+        disabled={!isValidNewPrice(newCityPrice) || addCityPrice.isPending}
+        className="h-10 px-4"
       >
-        Add Price
+        {addCityPrice.isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Adding...
+          </>
+        ) : (
+          "Add Price"
+        )}
       </Button>
     </div>
   );

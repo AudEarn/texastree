@@ -20,8 +20,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Edit, Plus } from "lucide-react";
+import { Edit, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
+
+// Update the interface to include business details
+  interface BusinessCredit {
+    id: string;
+    business_id: string;
+    credits_remaining: number;
+    notes: string;
+    created_at: string;
+    tree_service_companies: {
+      id: string;
+      business_name: string;
+      city: string;
+    };
+  }
 
 export const LeadCreditsManager = () => {
   const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
@@ -30,27 +44,18 @@ export const LeadCreditsManager = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch businesses with their lead credits
-  const { data: businessesWithCredits } = useQuery({
+  const { data: businessesWithCredits } = useQuery<BusinessCredit[]>({
     queryKey: ["businesses-credits"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("business_lead_credits")
-        .select(
-          `
-          *,
-          tree_service_companies (
-            id,
-            business_name,
-            city
-          )
-        `
-        )
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data;
+      const response = await fetch('/api/admin/lead-credits');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch lead credits');
+      }
+      return response.json();
     },
   });
 
@@ -70,16 +75,24 @@ export const LeadCreditsManager = () => {
 
   const addCreditsMutation = useMutation({
     mutationFn: async (businessId: string) => {
-      const { data, error } = await supabase
-        .from("business_lead_credits")
-        .insert({
-          business_id: businessId,
-          credits_remaining: parseInt(credits),
+      const response = await fetch('/api/admin/lead-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          businessId,
+          credits,
           notes,
-        });
+        }),
+      });
 
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to add lead credits');
+      }
+
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["businesses-credits"] });
@@ -90,12 +103,13 @@ export const LeadCreditsManager = () => {
       setSelectedBusiness(null);
       setCredits("");
       setNotes("");
+      setIsDialogOpen(false); // Close the dialog
     },
     onError: (error) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to add lead credits",
+        description: error.message,
       });
     },
   });
@@ -110,16 +124,20 @@ export const LeadCreditsManager = () => {
       credits: number;
       notes: string;
     }) => {
-      const { data, error } = await supabase
-        .from("business_lead_credits")
-        .update({
-          credits_remaining: credits,
-          notes,
-        })
-        .eq("id", id);
+      const response = await fetch('/api/admin/lead-credits', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, credits, notes }),
+      });
 
-      if (error) throw error;
-      return data;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update lead credits');
+      }
+
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["businesses-credits"] });
@@ -131,12 +149,13 @@ export const LeadCreditsManager = () => {
       setCredits("");
       setNotes("");
       setIsEditMode(false);
+      setIsDialogOpen(false); // Close the dialog
     },
     onError: (error) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update lead credits",
+        description: error.message,
       });
     },
   });
@@ -155,18 +174,24 @@ export const LeadCreditsManager = () => {
     });
   };
 
-  const handleEditClick = (business: any) => {
-    setSelectedBusiness(business);
+  const handleEditClick = (business: BusinessCredit) => {
+    setSelectedBusiness({
+      id: business.id,
+      business_id: business.business_id,
+      business_name: business.tree_service_companies.business_name,
+      city: business.tree_service_companies.city
+    });
     setCredits(business.credits_remaining.toString());
     setNotes(business.notes || "");
     setIsEditMode(true);
+    setIsDialogOpen(true);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Lead Credits Management</h2>
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
               onClick={() => {
@@ -187,9 +212,14 @@ export const LeadCreditsManager = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              {!isEditMode && (
-                <div className="space-y-2">
-                  <Label>Business</Label>
+              <div className="space-y-2">
+                <Label>Business</Label>
+                {isEditMode ? (
+                  <Input
+                    value={selectedBusiness?.business_name || ""}
+                    disabled
+                  />
+                ) : (
                   <select
                     className="w-full p-2 border rounded"
                     onChange={(e) => {
@@ -207,8 +237,19 @@ export const LeadCreditsManager = () => {
                       </option>
                     ))}
                   </select>
+                )}
+              </div>
+              
+              {isEditMode && (
+                <div className="space-y-2">
+                  <Label>City</Label>
+                  <Input
+                    value={selectedBusiness?.city || ""}
+                    disabled
+                  />
                 </div>
               )}
+
               <div className="space-y-2">
                 <Label>Number of Credits</Label>
                 <Input
@@ -218,6 +259,7 @@ export const LeadCreditsManager = () => {
                   min="0"
                 />
               </div>
+
               <div className="space-y-2">
                 <Label>Notes</Label>
                 <Textarea
@@ -226,11 +268,20 @@ export const LeadCreditsManager = () => {
                   placeholder="Add any notes about these credits"
                 />
               </div>
+
               <Button
                 className="w-full"
                 onClick={isEditMode ? handleUpdateCredits : handleAddCredits}
+                disabled={addCreditsMutation.isPending || updateCreditsMutation.isPending}
               >
-                {isEditMode ? "Update Credits" : "Add Credits"}
+                {(addCreditsMutation.isPending || updateCreditsMutation.isPending) ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isEditMode ? "Updating..." : "Adding..."}
+                  </>
+                ) : (
+                  isEditMode ? "Update Credits" : "Add Credits"
+                )}
               </Button>
             </div>
           </DialogContent>

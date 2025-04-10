@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Check, Pencil, Trash2, X } from "lucide-react";
+// Add Loader2 to the imports
+import { ArrowDown, ArrowUp, Check, Loader2, Pencil, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { LeadTypeData } from "../types";
 
@@ -87,12 +88,15 @@ export function LeadTypesTable({ leadTypes = [] }: LeadTypesTableProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leadTypes"] });
-      setEditingId(null);
-      setEditForm({});
       toast({
         title: "Success",
         description: "Lead type updated successfully",
       });
+      // Delay reset of form state
+      setTimeout(() => {
+        setEditingId(null);
+        setEditForm({});
+      }, 1000);
     },
     onError: (error) => {
       toast({
@@ -123,6 +127,14 @@ export function LeadTypesTable({ leadTypes = [] }: LeadTypesTableProps) {
         title: "Success",
         description: "Lead type deleted successfully",
       });
+      // Let the success message show before closing
+      setTimeout(() => {
+        const dialogElement = document.querySelector('[role="dialog"]');
+        if (dialogElement) {
+          const closeButton = dialogElement.querySelector('button[data-state="open"]');
+          closeButton?.click();
+        }
+      }, 1000);
     },
     onError: (error) => {
       toast({
@@ -229,7 +241,11 @@ export function LeadTypesTable({ leadTypes = [] }: LeadTypesTableProps) {
                     onClick={() => handleUpdate(leadType.id)}
                     disabled={updateLeadType.isPending}
                   >
-                    <Check className="h-4 w-4" />
+                    {updateLeadType.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Check className="h-4 w-4" />
+                    )}
                   </Button>
                   <Button variant="ghost" size="icon" onClick={cancelEditing}>
                     <X className="h-4 w-4" />
