@@ -51,6 +51,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    
 
     if (!lead_type_id?.trim()) {
       return NextResponse.json(
