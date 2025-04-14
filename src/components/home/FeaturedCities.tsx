@@ -4,15 +4,15 @@ import Link from "next/link";
 const featuredCities = [
   {
     name: "Houston",
-    image: "/images/cities/houston.jpg"
+    image: "/images/cities/houston.png"
   },
   {
     name: "Dallas",
-    image: "/images/cities/dallas.jpg"
+    image: "/images/cities/dallas.png"
   },
   {
     name: "Austin",
-    image: "/images/cities/austin.jpg"
+    image: "/images/cities/austin.png"
   }
 ];
 

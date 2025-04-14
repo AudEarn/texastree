@@ -9,11 +9,11 @@ export const CityButton = ({ cityName }: CityButtonProps) => {
   const getBackgroundImage = (city: string) => {
     switch (city.toLowerCase()) {
       case "houston":
-        return "url('/lovable-uploads/8f52e6de-f92a-4fcf-b84c-88ec28058836.png')";
+        return "url('/images/cities/houston.png')";
       case "dallas":
-        return "url('/lovable-uploads/22107eae-cf6d-4b9a-b8fb-b71c3e8ad88a.png')";
+        return "url('/images/cities/dallas.png')";
       case "austin":
-        return "url('/lovable-uploads/b6e08bea-d82a-4775-bafc-dfd81c6af8bd.png')";
+        return "url('/images/cities/austin.png')";
       default:
         return "none";
     }
@@ -37,7 +37,7 @@ export const CityButton = ({ cityName }: CityButtonProps) => {
     >
       {isSpecialCity ? (
         <>
-          <div 
+          <div
             className="absolute inset-0 bg-black bg-opacity-40 rounded-lg hover:bg-opacity-30 transition-all"
             style={{ backdropFilter: 'blur(1px)' }}
           />
