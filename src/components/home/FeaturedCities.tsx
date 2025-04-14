@@ -4,15 +4,15 @@ import Link from "next/link";
 const featuredCities = [
   {
     name: "Houston",
-    image: "/lovable-uploads/8f52e6de-f92a-4fcf-b84c-88ec28058836.png"
+    image: "/images/cities/houston.jpg"
   },
   {
     name: "Dallas",
-    image: "/lovable-uploads/22107eae-cf6d-4b9a-b8fb-b71c3e8ad88a.png"
+    image: "/images/cities/dallas.jpg"
   },
   {
     name: "Austin",
-    image: "/lovable-uploads/b6e08bea-d82a-4775-bafc-dfd81c6af8bd.png"
+    image: "/images/cities/austin.jpg"
   }
 ];
 

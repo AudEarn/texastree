@@ -9,7 +9,12 @@ import { useEffect, useState } from "react";
 
 const DirectoryCity = () => {
   const params = useParams();
-  const city = typeof params.city === 'string' ? params.city : Array.isArray(params.city) ? params.city[0] : '';
+  console.log(params);
+  const city = typeof params.city === 'string'
+    ? decodeURIComponent(params.city)
+    : Array.isArray(params.city)
+    ? decodeURIComponent(params.city[0])
+    : '';
   const router = useRouter();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
@@ -115,7 +120,7 @@ const DirectoryCity = () => {
         variant: "destructive",
       });
       const redirectTimer = setTimeout(() => router.push("/directory"), 2000);
-      
+
       // Cleanup timeout on unmount
       return () => clearTimeout(redirectTimer);
     }
