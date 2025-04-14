@@ -106,6 +106,21 @@ const DirectoryCity = () => {
     }
   };
 
+  // Add new useEffect for handling empty companies state
+  useEffect(() => {
+    if (city && !companiesLoading && (!companies || companies.length === 0)) {
+      toast({
+        title: "No Tree Services Found",
+        description: `There are no tree services listed in ${city}. Redirecting to directory...`,
+        variant: "destructive",
+      });
+      const redirectTimer = setTimeout(() => router.push("/directory"), 2000);
+      
+      // Cleanup timeout on unmount
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [city, companies, companiesLoading, router, toast]);
+
   if (!city && (companies?.length === 0)) {
     return (
       <DirectoryLayout
@@ -134,13 +149,8 @@ const DirectoryCity = () => {
     />;
   }
 
+  // Remove the toast and redirect logic from here
   if (!companies || companies.length === 0) {
-    toast({
-      title: "No Tree Services Found",
-      description: `There are no tree services listed in ${city}. Redirecting to directory...`,
-      variant: "destructive",
-    });
-    setTimeout(() => router.push("/directory"), 2000);
     return <DirectoryLayout
       isLoading={true}
       searchQuery={searchQuery}

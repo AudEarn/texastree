@@ -21,44 +21,46 @@ const Directory = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
+        setIsLoadingCities(true);
         const { data, error } = await supabase
           .from('tree_service_companies')
           .select('city')
           .not('city', 'is', null)
           .neq('city', '')
           .order('city');
-
-        if (error) {
-          console.error('Error fetching cities:', error);
-          setIsLoadingCities(false);
-          return;
-        }
-
+  
+        if (error) throw error;
+  
         const uniqueCitiesMap = new Map<string, string>();
-
-        data.forEach(item => {
+        data?.forEach(item => {
           const cityValue = item.city?.trim();
-          if (!cityValue) return;
-
-          const lowerCity = cityValue.toLowerCase();
-          if (!uniqueCitiesMap.has(lowerCity)) {
-            const properCity = cityValue
-              .split(' ')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-              .join(' ');
-            uniqueCitiesMap.set(lowerCity, properCity);
+          if (cityValue) {
+            const lowerCity = cityValue.toLowerCase();
+            if (!uniqueCitiesMap.has(lowerCity)) {
+              const properCity = cityValue
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+              uniqueCitiesMap.set(lowerCity, properCity);
+            }
           }
         });
-
+  
         const uniqueCities = Array.from(uniqueCitiesMap.values()).sort();
-        setAllCities(uniqueCities);
+        setAllCities(uniqueCities.length > 0 ? uniqueCities : ['New York', 'Los Angeles']); // Fallback
         setIsLoadingCities(false);
       } catch (error) {
         console.error('Error in fetchCities:', error);
+        toast({
+          title: "Error Loading Cities",
+          description: "Failed to load cities. Using fallback options.",
+          variant: "destructive",
+        });
+        setAllCities(['New York', 'Los Angeles']); // Fallback on error
         setIsLoadingCities(false);
       }
     };
-
+  
     fetchCities();
   }, []);
 

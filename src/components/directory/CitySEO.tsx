@@ -1,61 +1,74 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
-import Head from 'next/head'
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import Head from 'next/head';
 
 interface CityPageProps {
   city: string;
 }
 
 interface SeoData {
-  meta_title: string
-  meta_description: string
+  meta_title: string;
+  meta_description: string;
 }
 
 export default function CityPage({ city }: CityPageProps) {
-  console.log("this is citypage", city)
-  const [seoData, setSeoData] = useState<SeoData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  console.log('CityPage rendered for:', city);
+  const [seoData, setSeoData] = useState<SeoData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  // Initialize Supabase client
-  // Use explicit string values for environment variables to avoid the error
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  
   useEffect(() => {
-    // Only create the client if we have the necessary values
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error("Supabase URL or Anon Key is missing")
-      setIsLoading(false)
-      return
-    }
-    
-    const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
-    
-    async function fetchSeoData() {
+    const fetchSeoData = async () => {
+      if (!supabase) {
+        toast({
+          title: 'Configuration Error',
+          description: 'Unable to connect to database. Please try again later.',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
+      }
+
       try {
+        setIsLoading(true);
         const { data, error } = await supabase
           .from('city_seo')
           .select('meta_title, meta_description')
           .eq('city', city)
-          .single()
+          .single();
+
+        console.log('Supabase SEO response:', { data, error }); // Debug log
 
         if (error) {
-          console.error('Error fetching city SEO:', error)
-          return
+          console.error('Supabase error fetching city SEO:', error);
+          toast({
+            title: 'Error Loading SEO Data',
+            description: `Failed to load SEO data for ${city}.`,
+            variant: 'destructive',
+          });
+          setSeoData(null);
+          return;
         }
 
-        setSeoData(data)
+        setSeoData(data || null);
       } catch (error) {
-        console.error('Error fetching city SEO:', error)
+        console.error('Unexpected error fetching city SEO:', error);
+        toast({
+          title: 'Error',
+          description: 'An unexpected error occurred while loading SEO data.',
+          variant: 'destructive',
+        });
+        setSeoData(null);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchSeoData()
-  }, [city, supabaseUrl, supabaseAnonKey])
+    fetchSeoData();
+  }, [city, toast]);
 
   if (isLoading) {
     return (
@@ -65,20 +78,21 @@ export default function CityPage({ city }: CityPageProps) {
           <div className="h-4 bg-gray-200 rounded w-2/3 mb-4"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <>
       <Head>
-        <title>{seoData?.meta_title || `Directory - ${city}`}</title>
+        <title>{seoData?.meta_title || `Tree Services in ${city}`}</title>
         <meta
           name="description"
-          content={seoData?.meta_description || `Find listings in ${city}`}
+          content={seoData?.meta_description || `Find top-rated tree service companies in ${city}.`}
         />
         <link rel="canonical" href={`/directory/${city}`} />
       </Head>
 
+      {/* Uncomment when content is needed */}
       {/* <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-6">{city}</h1>
         <div className="prose max-w-none">
@@ -86,5 +100,5 @@ export default function CityPage({ city }: CityPageProps) {
         </div>
       </div> */}
     </>
-  )
+  );
 }
