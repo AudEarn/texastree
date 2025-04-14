@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
         ignoreBuildErrors: true,
     },
     images: {
+        unoptimized: true,
         domains: [
             'grey-herring-327677.hostingersite.com',
             'preview--treehub-automation.lovable.app',
