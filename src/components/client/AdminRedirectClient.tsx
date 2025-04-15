@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AdminRedirectClient({
@@ -9,7 +9,7 @@ export default function AdminRedirectClient({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-
+const router = useRouter()
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isAdminRoute = pathname.startsWith("/admin");
@@ -22,7 +22,8 @@ export default function AdminRedirectClient({
         !window.location.hostname.includes("localhost") &&
         !window.location.hostname.includes("lovableproject.com")
       ) {
-        window.location.href = `https://preview--treehub-automation.lovable.app${pathname}`;
+        // window.location.href = `https://preview--treehub-automation.lovable.app${pathname}`;
+        router.push(pathname)
       }
     }
   }, [pathname]);
