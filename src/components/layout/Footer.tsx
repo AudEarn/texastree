@@ -10,12 +10,14 @@ export function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-merriweather font-bold mb-4">TreeServe</h3>
+            {/* <h3 className="text-xl font-merriweather font-bold mb-4">Texas Tree Service Directory</h3> */}
+            <h3 className="text-xl font-merriweather font-bold mb-4">TexasTreeServiceDirectory</h3>
             <p className="text-forest-100">Your trusted directory for professional tree services across Texas.</p>
           </div>
           <div>
             <h4 className="font-merriweather font-bold mb-4">Quick Links</h4>
             <ul className="space-y-2">
+              <li><Link href="/contact-us" className="hover:text-forest-200">Contact Us</Link></li>
               <li><Link href="/directory" className="hover:text-forest-200">Tree Service Directory</Link></li>
               <li><Link href="/blog" className="hover:text-forest-200">Tree Care Blog</Link></li>
               <li><Link href="/claim-listing" className="hover:text-forest-200">List Your Tree Service</Link></li>
@@ -36,12 +38,13 @@ export function Footer() {
           <div>
             <h4 className="font-merriweather font-bold mb-4">Contact</h4>
             <ul className="space-y-2">
-              <li>Email: contact@treeserve.com</li>
+              <li>Email: Billy@Audearn.comD</li>
               <li>Phone: (555) 123-4567</li>
               <li className="mt-4">
                 <Link href="/directory" className="hover:text-forest-200">
                   Find Tree Services Near You
                 </Link>
+                
               </li>
             </ul>
           </div>

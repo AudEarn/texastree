@@ -3,9 +3,10 @@ import Link from "next/link";
 
 interface CityButtonProps {
   cityName: string;
+  isShowImages?: boolean;
 }
 
-export const CityButton = ({ cityName }: CityButtonProps) => {
+export const CityButton = ({ cityName, isShowImages=true }: CityButtonProps) => {
   const getBackgroundImage = (city: string) => {
     switch (city.toLowerCase()) {
       case "houston":
@@ -19,7 +20,7 @@ export const CityButton = ({ cityName }: CityButtonProps) => {
     }
   };
 
-  const isSpecialCity = ["Houston", "Dallas", "Austin"].includes(cityName);
+  const isSpecialCity = isShowImages && ["Houston", "Dallas", "Austin"].includes(cityName);
 
   return (
     <Link

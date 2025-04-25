@@ -30,13 +30,14 @@ export const Hero = () => {
 
   return (
     <>
-      <section className="hero-pattern py-20">
+      {/* <section className="hero-pattern py-20"> */}
+      <section className="py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-forest-600 mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Find Trusted Tree Services in Texas
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
+            <p className="text-xl text-gray-200 mb-8">
               Connect with verified tree service professionals in your area
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
