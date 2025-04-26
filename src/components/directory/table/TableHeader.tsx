@@ -5,12 +5,21 @@ import { ArrowUpDown } from "lucide-react";
 interface TableHeaderProps {
   onSort: (column: "name" | "rating") => void;
   isAdmin: boolean;
+  isVerifiedSection: boolean;
 }
 
-export const CompanyTableHeader = ({ onSort, isAdmin }: TableHeaderProps) => {
+export const CompanyTableHeader = ({ onSort, isAdmin, isVerifiedSection }: TableHeaderProps) => {
   return (
     <TableHeader>
       <TableRow>
+        {isVerifiedSection && <TableHead className="w-[5%]">
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 text-left p-0"
+          >
+            Logo
+          </Button>
+        </TableHead>}
         <TableHead className="w-[40%]">
           <Button
             variant="ghost"
@@ -34,6 +43,14 @@ export const CompanyTableHeader = ({ onSort, isAdmin }: TableHeaderProps) => {
         </TableHead>
         <TableHead className="w-[20%]">Website</TableHead>
         {isAdmin && <TableHead className="w-[10%]">Actions</TableHead>}
+        {isVerifiedSection && <TableHead className="w-[5%]">
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 text-center p-0"
+          >
+            Image
+          </Button>
+        </TableHead>}
       </TableRow>
     </TableHeader>
   );

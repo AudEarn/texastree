@@ -96,13 +96,15 @@ console.log(featuredCompany)
             </div>
           </div>
           <div className="hidden md:block">
+                <a href="tel:5551234567" className="relative z-10 flex items-center justify-center w-full h-full text-green-600 font-bold text-lg gap-2 flex-col">
             <div className="relative w-24 h-24 bg-white rounded-full flex items-center justify-center animate-bounce shadow-lg">
               <div className="absolute inset-0 bg-green-400 rounded-full opacity-20"></div>
-              <div className="text-green-600 font-bold text-center">
-                <PhoneCall className="mx-auto h-8 w-8" />
-                <span className="text-sm">Call Now</span>
+              <div className="text-green-600 font-bold text-center flex flex-col justify-center items-center gap-1.5">
+                    <PhoneCall className="h-8 w-8" />
+                    <span className="text-sm">Call Now</span>
               </div>
             </div>
+                </a>
           </div>
         </div>
       </div>

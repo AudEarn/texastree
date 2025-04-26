@@ -79,7 +79,7 @@ export const CompaniesTable = ({
       <h3 className="text-lg font-semibold text-forest-700 mb-4">{title}</h3>
       <div className="overflow-x-auto">
         <Table>
-          <CompanyTableHeader onSort={onSort} isAdmin={!!isAdmin} />
+          <CompanyTableHeader onSort={onSort} isAdmin={!!isAdmin} isVerifiedSection={isVerifiedSection} />
           <TableBody>
             {sortedCompanies.length === 0 ? (
               <tr>

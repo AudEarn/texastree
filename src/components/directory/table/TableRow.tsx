@@ -12,6 +12,7 @@ import { Edit, Shield } from "lucide-react";
 import { useState } from "react";
 import { EditBusinessForm } from "../EditBusinessForm";
 import { StarRating } from "../StarRating";
+import Image from "next/image";
 
 interface Company {
   id: string;
@@ -52,7 +53,18 @@ export const CompanyTableRow = ({
         transition-all duration-200 hover:bg-forest-50/30
       `}
     >
+        {isVerifiedSection && (
       <TableCell className="max-w-[250px]">
+        <div className="">
+            <Image height={300} width={300} src={company?.logo_url || ""} alt={company?.business_name} />
+          </div>
+      </TableCell>
+            )}
+
+
+      <TableCell className="max-w-[250px]">
+        <div className="">
+
         <div className="flex items-center gap-2">
           <span className={`truncate ${isVerifiedSection ? "font-bold" : ""}`}>
             {company.business_name}
@@ -64,10 +76,12 @@ export const CompanyTableRow = ({
             </Badge>
           )}
         </div>
+        {isVerifiedSection && (company?.description?.slice(0, 100) || <p className="text-wrap">{"Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, nulla obcaecati, consequatur deserunt ratione eum corporis adipisci perspiciatis officiis labore expedita quasi ab beatae fugit necessitatibus illo cumque. At, quisquam?".slice(0, 100)}...</p>)}
+          </div>
       </TableCell>
       <TableCell>{company.contact_phone || "N/A"}</TableCell>
       <TableCell>
-        <div className="flex flex-col gap-1">
+        <div className="flex ps-3 flex-col gap-1">
           {company.google_rating ? (
             <span className="font-bold">
               {company.google_rating.toFixed(1)}
@@ -116,6 +130,13 @@ export const CompanyTableRow = ({
           </Dialog>
         </TableCell>
       )}
+      {isVerifiedSection && (
+      <TableCell className="max-w-[80px]">
+        <div className="">
+            <Image height={300} width={300} src={company?.feature_images[0] || ""} alt={company?.business_name} />
+          </div>
+      </TableCell>
+            )}
     </TableRow>
   );
 };
