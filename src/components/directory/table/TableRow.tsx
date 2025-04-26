@@ -54,7 +54,7 @@ export const CompanyTableRow = ({
       `}
     >
         {isVerifiedSection && (
-      <TableCell className="max-w-[250px]">
+      <TableCell className="max-w-[50px]">
         <div className="">
             <Image height={300} width={300} src={company?.logo_url || ""} alt={company?.business_name} />
           </div>
