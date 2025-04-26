@@ -561,6 +561,9 @@ export const FeaturedListing = ({ business }: FeaturedListingProps) => {
 
   return (
     <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-white to-amber-50 border-none shadow-xl rounded-xl transform transition-transform hover:scale-[1.01]">
+        {/* <div className="h-10 w-10 border">
+                    <Image height={300} width={300} src={business.feature_images[0] || ""} alt={"Logo"} />
+                  </div> */}
       {/* Gold accent bar */}
       <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600"></div>
       
