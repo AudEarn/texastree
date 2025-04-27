@@ -93,6 +93,61 @@ export const BusinessFormFields = ({ form }: BusinessFormFieldsProps) => {
         )}
       />
 
+      
+      
+    <FormField
+        control={form.control}
+        name="logo_url"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Logo URL</FormLabel>
+            <FormControl>
+              <Input {...field} value={field.value || ""} placeholder="https://example.com" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      
+      
+
+      <FormField
+  control={form.control}
+  name="feature_images"
+  render={({ field }) => {
+    // Convert array to string for display
+    const displayValue = Array.isArray(field.value) 
+      ? field.value.join('\n') // Using newline as separator
+      : field.value || "";
+    
+    return (
+        <FormItem className="col-span-2">
+        <FormLabel>Features Images</FormLabel>
+        <FormControl>
+          <Textarea
+            placeholder="https://example.com"
+            value={displayValue}
+            onChange={(e) => {
+              // Convert string back to array on change
+              const inputValue = e.target.value;
+              // Split by comma or newline
+              const arrayValue = inputValue
+                ? inputValue.split(/[,\n]+/).filter(Boolean).map(item => item.trim())
+                : [];
+              
+              // Update the form with the array value
+              field.onChange(arrayValue);
+            }}
+            className="h-20"
+          />
+          {/* <Textarea {...field} value={field.value || ""} className="h-20" /> */}
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>
+
       <FormField
         control={form.control}
         name="business_statement"
@@ -106,6 +161,7 @@ export const BusinessFormFields = ({ form }: BusinessFormFieldsProps) => {
           </FormItem>
         )}
       />
+
 
       <div className="col-span-2 flex gap-4">
         <FormField

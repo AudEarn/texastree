@@ -21,7 +21,8 @@ const DirectoryCity = () => {
   const [allCities, setAllCities] = useState<string[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(true);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [sortBy, setSortBy] = useState<'name' | 'rating'>('name');
+//   const [sortBy, setSortBy] = useState<'name' | 'rating'>('name');
+  const [sortBy, setSortBy] = useState<'name' | 'rating'>('rating');
 
   useEffect(() => {
     const fetchCities = async () => {

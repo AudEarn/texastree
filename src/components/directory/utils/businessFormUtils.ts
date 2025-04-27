@@ -18,6 +18,9 @@ export const businessFormSchema = z.object({
     })
     .nullable(),
   business_statement: z.string().nullable(),
+//   feature_images: z.array(z.string()).nullable(),
+// can you please make below features_images a type so that i can put string or array or string please
+
   feature_images: z.array(z.string()).nullable(),
   logo_url: z.string().nullable(),
   is_verified: z.boolean(),

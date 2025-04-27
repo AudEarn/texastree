@@ -38,7 +38,7 @@ export function Footer() {
           <div>
             <h4 className="font-merriweather font-bold mb-4">Contact</h4>
             <ul className="space-y-2">
-              <li>Email: Billy@Audearn.comD</li>
+              <li>Email: Billy@Audearn.com</li>
               <li>Phone: (555) 123-4567</li>
               <li className="mt-4">
                 <Link href="/directory" className="hover:text-forest-200">

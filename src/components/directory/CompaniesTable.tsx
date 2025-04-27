@@ -36,6 +36,7 @@ export const CompaniesTable = ({
   title,
   isVerifiedSection
 }: CompaniesTableProps) => {
+
   // Check if user is admin
   const { data: profile } = useQuery({
     queryKey: ['profile'],

@@ -55,8 +55,8 @@ export const CompanyTableRow = ({
     >
         {isVerifiedSection && (
       <TableCell className="max-w-[50px]">
-        <div className="">
-            <Image height={300} width={300} src={company?.logo_url || ""} alt={company?.business_name} />
+        <div className="rounded-full h-12 w-12 overflow-hidden">
+            <Image height={300} width={300} src={company?.logo_url || ""} alt={company?.business_name} className="object-contain" />
           </div>
       </TableCell>
             )}
@@ -65,7 +65,7 @@ export const CompanyTableRow = ({
       <TableCell className="max-w-[250px]">
         <div className="">
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-gray-800">
           <span className={`truncate ${isVerifiedSection ? "font-bold" : ""}`}>
             {company.business_name}
           </span>
@@ -106,6 +106,13 @@ export const CompanyTableRow = ({
           "N/A"
         )}
       </TableCell>
+      {isVerifiedSection && (
+      <TableCell className="max-w-[80px]">
+        <div className="">
+            <Image height={300} width={300} src={company?.feature_images[0] || ""} alt={company?.business_name} />
+          </div>
+      </TableCell>
+            )}
       {isAdmin && (
         <TableCell>
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -130,13 +137,6 @@ export const CompanyTableRow = ({
           </Dialog>
         </TableCell>
       )}
-      {isVerifiedSection && (
-      <TableCell className="max-w-[80px]">
-        <div className="">
-            <Image height={300} width={300} src={company?.feature_images[0] || ""} alt={company?.business_name} />
-          </div>
-      </TableCell>
-            )}
     </TableRow>
   );
 };
