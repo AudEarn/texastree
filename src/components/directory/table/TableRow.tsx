@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Edit, Shield } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { EditBusinessForm } from "../EditBusinessForm";
 import { StarRating } from "../StarRating";
-import Image from "next/image";
 
 interface Company {
   id: string;
@@ -27,6 +27,7 @@ interface Company {
   is_verified: boolean;
   featured_in_city: boolean | null;
   city: string;
+  description?: string | null;
 }
 
 interface CompanyTableRowProps {
@@ -41,6 +42,10 @@ export const CompanyTableRow = ({
   isVerifiedSection,
 }: CompanyTableRowProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDescriptionDialogOpen, setIsDescriptionDialogOpen] = useState(false);
+
+  const defaultDescription =
+    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, nulla obcaecati, consequatur deserunt ratione eum corporis adipisci perspiciatis officiis labore expedita quasi ab beatae fugit necessitatibus illo cumque. At, quisquam?";
 
   return (
     <TableRow
@@ -53,31 +58,52 @@ export const CompanyTableRow = ({
         transition-all duration-200 hover:bg-forest-50/30
       `}
     >
-        {isVerifiedSection && (
-      <TableCell className="max-w-[50px]">
-        <div className="rounded-full h-12 w-12 overflow-hidden">
-            <Image height={300} width={300} src={company?.logo_url || ""} alt={company?.business_name} className="object-contain" />
+      {isVerifiedSection && (
+        <TableCell className="max-w-[50px]">
+          <div className="rounded-full h-12 w-12 overflow-hidden">
+            <Image
+              height={300}
+              width={300}
+              src={company?.logo_url || ""}
+              alt={company?.business_name}
+              className="object-contain"
+            />
           </div>
-      </TableCell>
-            )}
-
+        </TableCell>
+      )}
 
       <TableCell className="max-w-[250px]">
         <div className="">
-
-        <div className="flex items-center gap-2 text-gray-800">
-          <span className={`truncate ${isVerifiedSection ? "font-bold" : ""}`}>
-            {company.business_name}
-          </span>
-          {company.is_verified && (
-            <Badge variant="secondary" className="ml-1 shrink-0">
-              <Shield className="w-4 h-4 mr-1 text-yellow-500 fill-yellow-500" />
-              <span className="font-bold">Verified</span>
-            </Badge>
+          <div className="flex items-center gap-2 text-gray-800">
+            <span
+              className={`truncate ${isVerifiedSection ? "font-bold" : ""}`}
+            >
+              {company.business_name}
+            </span>
+            {company.is_verified && (
+              <Badge variant="secondary" className="ml-1 shrink-0">
+                <Shield className="w-4 h-4 mr-1 text-yellow-500 fill-yellow-500" />
+                <span className="font-bold">Verified</span>
+              </Badge>
+            )}
+          </div>
+          {isVerifiedSection && (
+            <div className="mt-2">
+              <p className="text-wrap text-sm text-gray-600">
+                {company?.description?.slice(0, 100) ||
+                  defaultDescription.slice(0, 100)}
+                ...
+              </p>
+              <Button
+                variant="link"
+                className="text-forest-600 p-0 h-auto text-sm"
+                onClick={() => setIsDescriptionDialogOpen(true)}
+              >
+                See More
+              </Button>
+            </div>
           )}
         </div>
-        {isVerifiedSection && (company?.description?.slice(0, 100) || <p className="text-wrap">{"Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, nulla obcaecati, consequatur deserunt ratione eum corporis adipisci perspiciatis officiis labore expedita quasi ab beatae fugit necessitatibus illo cumque. At, quisquam?".slice(0, 100)}...</p>)}
-          </div>
       </TableCell>
       <TableCell>{company.contact_phone || "N/A"}</TableCell>
       <TableCell>
@@ -107,12 +133,17 @@ export const CompanyTableRow = ({
         )}
       </TableCell>
       {isVerifiedSection && (
-      <TableCell className="max-w-[80px]">
-        <div className="">
-            <Image height={300} width={300} src={company?.feature_images[0] || ""} alt={company?.business_name} />
+        <TableCell className="max-w-[80px]">
+          <div className="">
+            <Image
+              height={300}
+              width={300}
+              src={company?.feature_images?.[0] || ""}
+              alt={company?.business_name}
+            />
           </div>
-      </TableCell>
-            )}
+        </TableCell>
+      )}
       {isAdmin && (
         <TableCell>
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -137,6 +168,22 @@ export const CompanyTableRow = ({
           </Dialog>
         </TableCell>
       )}
+
+      <Dialog
+        open={isDescriptionDialogOpen}
+        onOpenChange={setIsDescriptionDialogOpen}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{company.business_name}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <p className="text-gray-700 whitespace-pre-wrap">
+              {company?.description || defaultDescription}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </TableRow>
   );
 };
