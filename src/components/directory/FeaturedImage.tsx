@@ -3,14 +3,7 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import ImageMagnifier from "../common/ImageMagnifier";
-import {
-    Magnifier,
-    GlassMagnifier,
-    SideBySideMagnifier,
-    PictureInPictureMagnifier,
-    MOUSE_ACTIVATION,
-    TOUCH_ACTIVATION
-  } from "react-image-magnifiers";
+
 
 interface Business {
   business_name: string;
@@ -76,7 +69,7 @@ export default function FeaturedImage({
       </div>
 
       {/* 👉 Thumbnails */}
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2 mt-4 w-full md:w-[400px]">
         {images.map((img: string, index: number) => (
           <div
             key={index}
