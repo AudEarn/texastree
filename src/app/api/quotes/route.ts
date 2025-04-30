@@ -10,6 +10,9 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
 
+    const photoUrl = await uploadPhoto(data.photo);
+    console.log({ photoUrl });
+
     // Insert the quote data into Supabase
     const { data: quoteData, error } = await supabase
       .from("quote_leads")
@@ -23,7 +26,7 @@ export async function POST(request: Request) {
           customer_name: data.name,
           customer_email: data.email,
           customer_phone: data.phone,
-          photo_url: data.photo ? await uploadPhoto(data.photo) : null,
+          photo_url: photoUrl || null,
           status: "new",
           created_at: new Date().toISOString(),
         },
@@ -51,15 +54,26 @@ export async function POST(request: Request) {
   }
 }
 
-async function uploadPhoto(photo: File) {
+async function uploadPhoto(photo: string) {
   try {
-    const fileExt = photo.name.split(".").pop();
-    const fileName = `${Math.random()}.${fileExt}`;
+    // Convert base64 to buffer if the photo is a base64 string
+    let photoBuffer;
+    if (typeof photo === "string" && photo.startsWith("data:")) {
+      const base64Data = photo.split(",")[1];
+      photoBuffer = Buffer.from(base64Data, "base64");
+    } else {
+      photoBuffer = photo;
+    }
+
+    const fileName = `lead-image-${Date.now()}.jpg`;
     const filePath = `quote-photos/${fileName}`;
 
     const { data, error } = await supabase.storage
       .from("quotes")
-      .upload(filePath, photo);
+      .upload(filePath, photoBuffer, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
 
     if (error) {
       throw error;

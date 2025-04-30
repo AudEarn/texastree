@@ -56,6 +56,8 @@ export const CompanyList = ({
     email: "",
     zip: "",
   });
+
+  console.log(formData)
   const [isSubmitted, setIsSubmitted] = useState(false);
   const featuredCompany = companies.find((c) => c.featured_in_city);
 
@@ -68,6 +70,7 @@ export const CompanyList = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(name, value)
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,

@@ -36,7 +36,7 @@ interface FormData {
   name: string;
   email: string;
   phone: string;
-  photo: File | null;
+  photo: string | null;
 }
 
 export const QuoteRequestForm = ({
@@ -172,9 +172,36 @@ export const QuoteRequestForm = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData((prev) => ({ ...prev, photo: e.target.files![0] }));
+  function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+  
+      reader.onload = () => {
+        const result = reader.result as string;
+        // This will include the data URI prefix: data:image/png;base64,...
+        resolve(result);
+      };
+  
+      reader.onerror = () => {
+        reject(new Error("File reading error"));
+      };
+  
+      reader.readAsDataURL(file);
+    });
+  }
+  
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files[0]) {
+        // console.log(formData,e.target.files[0])
+        try {
+            const base64 = await fileToBase64(e.target.files![0]);
+            console.log("Base64 string:", base64);
+            setFormData((prev) => ({ ...prev, photo: base64 }));
+          } catch (error) {
+            console.error("Conversion failed:", error);
+          }
+      
     }
   };
 
