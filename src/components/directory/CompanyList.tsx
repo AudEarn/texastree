@@ -7,8 +7,6 @@ import bbImg from "../../../public/images/cities/1.png";
 import liImg from "../../../public/images/cities/2.png";
 import { CompaniesTable } from "./CompaniesTable";
 import { FeaturedListing } from "./FeaturedListing";
-// import bbImg from "../../../public/images/cities/bbb.jpg"
-// import liImg from "../../../public/images/cities/l-i.jpg"
 import { QuoteRequestForm } from "./QuoteRequestForm";
 
 interface Company {
