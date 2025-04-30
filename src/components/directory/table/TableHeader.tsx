@@ -42,14 +42,7 @@ export const CompanyTableHeader = ({ onSort, isAdmin, isVerifiedSection }: Table
           </Button>
         </TableHead>
         <TableHead className="w-[20%]">Website</TableHead>
-        {isVerifiedSection && <TableHead className="w-[5%]">
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2 text-center p-0"
-          >
-            Image
-          </Button>
-        </TableHead>}
+       
         {isAdmin && <TableHead className="w-[10%]">Actions</TableHead>}
       </TableRow>
     </TableHeader>

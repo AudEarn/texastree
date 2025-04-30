@@ -1,18 +1,53 @@
-import { useState } from 'react';
-import Image from 'next/image';
-import { Star } from 'lucide-react';
+"use client"
+import { Star } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import ImageMagnifier from "../common/ImageMagnifier";
+import {
+    Magnifier,
+    GlassMagnifier,
+    SideBySideMagnifier,
+    PictureInPictureMagnifier,
+    MOUSE_ACTIVATION,
+    TOUCH_ACTIVATION
+  } from "react-image-magnifiers";
 
-export default function FeaturedImage({ business, images }) {
+interface Business {
+  business_name: string;
+  logo_url?: string;
+}
+
+interface FeaturedImageProps {
+  business: Business;
+  images: string[];
+}
+
+export default function FeaturedImage({
+  business,
+  images,
+}: FeaturedImageProps) {
   const [featureImage, setFeatureImage] = useState(images[0]);
 
+  console.log({featureImage})
   return (
-    <div className=''>
+    <div className="">
       <div className="relative w-full md:w-[400px] h-[300px] md:h-[400px] rounded-xl overflow-hidden group">
         {/* Golden frame effect */}
         <div className="absolute inset-0 border-2 border-amber-200 rounded-xl z-30 pointer-events-none"></div>
-        <div className="absolute inset-0 shadow-lg z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-20"></div>
-        <Image
+        
+        {/* <Magnifier
+          imageSrc={`https://preview--treehub-automation.lovable.app${featureImage}`}
+          //   imageSrc="./image.jpg"
+          imageAlt="Example"
+        //   largeImageSrc="./large-image.jpg" // Optional
+        largeImageSrc={`https://preview--treehub-automation.lovable.app${featureImage}`}
+          mouseActivation={MOUSE_ACTIVATION.DOUBLE_CLICK} // Optional
+          touchActivation={TOUCH_ACTIVATION.DOUBLE_TAP} // Optional
+        /> */}
+        {/* <div className="absolute inset-0 shadow-lg z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-20"></div> */}
+
+        <ImageMagnifier
           width={400}
           height={400}
           src={`https://preview--treehub-automation.lovable.app${featureImage}`}
@@ -42,12 +77,12 @@ export default function FeaturedImage({ business, images }) {
 
       {/* 👉 Thumbnails */}
       <div className="flex gap-2 mt-4">
-        {images.map((img, index) => (
+        {images.map((img: string, index: number) => (
           <div
             key={index}
             onClick={() => setFeatureImage(img)}
             className={`w-full h-20 cursor-pointer rounded-xl overflow-hidden border-2 ${
-              img === featureImage ? 'border-amber-500' : 'border-transparent'
+              img === featureImage ? "border-amber-500" : "border-transparent"
             }`}
           >
             <Image

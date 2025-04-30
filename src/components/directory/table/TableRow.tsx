@@ -13,6 +13,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { EditBusinessForm } from "../EditBusinessForm";
 import { StarRating } from "../StarRating";
+import ImageMagnifier from "@/components/common/ImageMagnifier";
 
 interface Company {
   id: string;
@@ -60,7 +61,8 @@ export const CompanyTableRow = ({
     >
       {isVerifiedSection && (
         <TableCell className="max-w-[50px]">
-          <div className="rounded-full h-12 w-12 overflow-hidden">
+            {/* can you please add a hover effect of below div. if i hover it will scale 1.5 */}
+          <div className="rounded-full h-12 w-12 overflow-hidden hover:scale-125 transition-all ease-linear duration-500 ">
             <Image
               height={300}
               width={300}
@@ -68,6 +70,14 @@ export const CompanyTableRow = ({
               alt={company?.business_name}
               className="object-contain"
             />
+            {/* <ImageMagnifier
+          width={400}
+          height={400}
+          src={company?.logo_url || ""}
+          alt={`${company.business_name} featured image`}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        /> */}
+
           </div>
         </TableCell>
       )}
@@ -132,18 +142,7 @@ export const CompanyTableRow = ({
           "N/A"
         )}
       </TableCell>
-      {isVerifiedSection && (
-        <TableCell className="max-w-[80px]">
-          <div className="">
-            <Image
-              height={300}
-              width={300}
-              src={company?.feature_images?.[0] || ""}
-              alt={company?.business_name}
-            />
-          </div>
-        </TableCell>
-      )}
+      
       {isAdmin && (
         <TableCell>
           <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
