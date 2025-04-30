@@ -44,7 +44,7 @@ export default function ImageMagnifier({
     <>
       <div
         ref={containerRef}
-        className="relative cursor-zoom-in"
+        className="relative cursor-zoom-in h-full"
         // onMouseEnter={() => setShowMagnifier(true)}
         // onMouseLeave={() => setShowMagnifier(false)}
         onMouseEnter={() => setShowModal(true)}

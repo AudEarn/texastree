@@ -50,7 +50,7 @@ export default function FeaturedImage({
         <ImageMagnifier
           width={400}
           height={400}
-          src={`https://preview--treehub-automation.lovable.app${featureImage}`}
+          src={featureImage?.includes('http') ? featureImage : `https://preview--treehub-automation.lovable.app${featureImage}`}
           alt={`${business.business_name} featured image`}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
@@ -88,7 +88,8 @@ export default function FeaturedImage({
             <Image
               width={80}
               height={80}
-              src={`https://preview--treehub-automation.lovable.app${img}`}
+            //   src={`https://preview--treehub-automation.lovable.app${img}`}
+              src={img?.includes('http') ? img : `https://preview--treehub-automation.lovable.app${img}`}
               alt={`Thumbnail ${index + 1}`}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             />

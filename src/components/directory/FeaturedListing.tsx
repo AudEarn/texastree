@@ -106,7 +106,7 @@ export const FeaturedListing = ({ business }: FeaturedListingProps) => {
       <CardContent className="p-8">
         <div className="flex flex-col md:flex-row gap-8">
           
-          <FeaturedImage business={business} images={[featureImage, featureImage, featureImage, featureImage]} />
+          <FeaturedImage business={business} images={[featureImage, "https://i.ibb.co.com/8DC7wwwC/download-3.jpg", "https://i.ibb.co.com/R4pVscKn/download.jpg", "https://i.ibb.co.com/wFFvy760/download-1.jpg"]} />
 
 
 
