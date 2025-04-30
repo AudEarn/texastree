@@ -63,6 +63,7 @@ export const QuoteRequestForm = ({
     phone: "",
     photo: null,
   });
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -89,6 +90,16 @@ export const QuoteRequestForm = ({
       form.setValue("city", preselectedCity);
     }
   }, [preselectedCity, form]);
+
+  // Add cleanup for preview URL
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+  
 
   const onSubmitForm = async (formData: FormValues) => {
     setIsSubmitting(true);
@@ -175,33 +186,35 @@ export const QuoteRequestForm = ({
   function fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-  
+
       reader.onload = () => {
         const result = reader.result as string;
         // This will include the data URI prefix: data:image/png;base64,...
         resolve(result);
       };
-  
+
       reader.onerror = () => {
         reject(new Error("File reading error"));
       };
-  
+
       reader.readAsDataURL(file);
     });
   }
-  
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files[0]) {
-        // console.log(formData,e.target.files[0])
-        try {
-            const base64 = await fileToBase64(e.target.files![0]);
-            console.log("Base64 string:", base64);
-            setFormData((prev) => ({ ...prev, photo: base64 }));
-          } catch (error) {
-            console.error("Conversion failed:", error);
-          }
-      
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Create preview URL
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+
+      try {
+        const base64 = await fileToBase64(file);
+        setFormData((prev) => ({ ...prev, photo: base64 }));
+      } catch (error) {
+        console.error("Conversion failed:", error);
+      }
     }
   };
 
@@ -422,22 +435,55 @@ export const QuoteRequestForm = ({
             </h3>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
               <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="flex text-sm text-gray-600">
-                  <label className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
-                    <span>Upload a file</span>
-                    <input
-                      type="file"
-                      className="sr-only"
-                      accept="image/*"
-                      onChange={handleFileChange}
+                {previewUrl ? (
+                  <div className="relative">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="max-h-48 mx-auto rounded-lg"
                     />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
-                </div>
-                <p className="text-xs text-gray-500">
-                  PNG, JPG, GIF up to 10MB
-                </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPreviewUrl(null);
+                        setFormData((prev) => ({ ...prev, photo: null }));
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                      <label className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                        <span>Upload a file</span>
+                        <input
+                          type="file"
+                          className="sr-only"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF up to 10MB
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
