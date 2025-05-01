@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import bbImg from "../../../public/images/cities/1.png";
 import liImg from "../../../public/images/cities/2.png";
+import quoteImg from "../../../public/images/cities/quote-img.png";
 import { CompaniesTable } from "./CompaniesTable";
 import { FeaturedListing } from "./FeaturedListing";
 import { QuoteRequestForm } from "./QuoteRequestForm";
@@ -119,13 +120,13 @@ export const CompanyList = ({
           <div className="absolute top-0 right-0 w-32 h-32 -mt-8 -mr-8 rounded-full bg-yellow-400 opacity-20 animate-pulse"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 -mb-6 -ml-6 rounded-full bg-green-800 opacity-20"></div>
 
-          <div className="relative flex items-center justify-between">
+          <div className="relative flex items-center justify-between text-center">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold leading-tight md:text-4xl animate-pulse">
-                🌳 Find the Best Tree Service in {featuredCompany?.city} — Fast,
+                <span className="bg-white rounded-full aspect-square py-0.5">🌳</span> Find the Best Tree Service in {featuredCompany?.city} — Fast,
                 Free, and Trusted!
               </h2>
-              <div className="flex items-center space-x-4 text-sm md:text-base">
+              <div className="flex items-center space-x-4 text-sm md:text-base justify-center">
                 <p className="text-lg font-semibold flex items-center">
                   <CheckCircle className="mr-2 h-6 w-6" /> Free Quotes
                 </p>
@@ -138,7 +139,7 @@ export const CompanyList = ({
                   24/7 Emergency Help Available
                 </p>
               </div>
-              <div className="flex items-center space-x-4 text-sm md:text-base">
+              <div className="flex items-center space-x-4 text-sm md:text-base justify-center">
                 <p className="text-lg font-semibold flex items-center">
                   ⭐⭐⭐⭐⭐
                 </p>
@@ -164,83 +165,19 @@ export const CompanyList = ({
                 </div>
               </div>
             </div>
-            <div className="hidden md:block">
-              <a
-                href="tel:5551234567"
-                className="relative z-10 flex items-center justify-center w-full h-full text-green-600 font-bold text-lg gap-2 flex-col"
-              >
-                <div className="relative w-24 h-24 bg-white rounded-full flex items-center justify-center  shadow-lg">
-                  <div className="absolute inset-0 bg-green-400 rounded-full opacity-20"></div>
-                  <div className="text-green-600 font-bold text-center flex flex-col justify-center items-center gap-1.5">
-                    <PhoneCall className="h-8 w-8 animate-ping duration-[1000]" />
-                    <span className="text-sm">Call Now</span>
-                  </div>
-                </div>
-              </a>
-            </div>
           </div>
         </div>
 
         {/* Form Section */}
-        <div className="p-6 md:flex ">
-          <div className="md:w-1/2 mx-auto md:pr-8">
+        <div className="p-6 md:flex items-center">
+          <div className="md:w-1/2 md:pr-8">
             {!isSubmitted ? (
               <>
-                <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Your Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Zip Code
-                    </label>
-                    <input
-                      type="text"
-                      id="zip"
-                      name="zip"
-                      value={formData.zip}
-                      onChange={handleChange}
-                      className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                      required
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-300"
-                  >
-                    Get My Free Tree Service Quote{" "}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </button>
-
-                  <p className="text-xs text-gray-500 text-center mt-4">
-                    100% Free • No Obligation • Pre-Screened Local Experts
-                  </p>
-                </form>
-
-                <div className="border-t border-gray-200 my-8"></div>
-
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">
                   Detailed Quote Request
                 </h3>
                 <QuoteRequestForm onSubmit={handleQuoteSubmit} />
+                
               </>
             ) : (
               <div className="text-center py-8">
@@ -260,6 +197,9 @@ export const CompanyList = ({
                 </button>
               </div>
             )}
+          </div>
+          <div className="md:w-1/2 md:pr-8">
+            <Image src={quoteImg} alt="quote image" height={500} width={500} className="w-full" />
           </div>
         </div>
 
