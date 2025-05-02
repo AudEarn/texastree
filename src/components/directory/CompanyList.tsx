@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import bbImg from "../../../public/images/cities/1.png";
 import liImg from "../../../public/images/cities/2.png";
-import quoteImg from "../../../public/images/cities/quote-img.png";
+import quoteImg from "../../../public/images/cities/quote-img.jpg";
 import { CompaniesTable } from "./CompaniesTable";
 import { FeaturedListing } from "./FeaturedListing";
 import { QuoteRequestForm } from "./QuoteRequestForm";
