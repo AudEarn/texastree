@@ -2,7 +2,6 @@
 import { Star } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import ImageMagnifier from "../common/ImageMagnifier";
 
 
 interface Business {
@@ -28,24 +27,15 @@ export default function FeaturedImage({
         {/* Golden frame effect */}
         <div className="absolute inset-0 border-2 border-amber-200 rounded-xl z-30 pointer-events-none"></div>
         
-        {/* <Magnifier
-          imageSrc={`https://preview--treehub-automation.lovable.app${featureImage}`}
-          //   imageSrc="./image.jpg"
-          imageAlt="Example"
-        //   largeImageSrc="./large-image.jpg" // Optional
-        largeImageSrc={`https://preview--treehub-automation.lovable.app${featureImage}`}
-          mouseActivation={MOUSE_ACTIVATION.DOUBLE_CLICK} // Optional
-          touchActivation={TOUCH_ACTIVATION.DOUBLE_TAP} // Optional
-        /> */}
-        {/* <div className="absolute inset-0 shadow-lg z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-20"></div> */}
-
-        <ImageMagnifier
+        <div className="absolute inset-0 shadow-lg z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-20"></div>
+        
+        <Image
           width={400}
           height={400}
           src={featureImage?.includes('http') ? featureImage : `https://preview--treehub-automation.lovable.app${featureImage}`}
           alt={`${business.business_name} featured image`}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
         {/* Premium badge */}

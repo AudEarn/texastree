@@ -115,7 +115,6 @@ export const CompanyList = ({
       )}
 
       <div className="w-full mx-auto my-8 overflow-hidden rounded-lg shadow-xl bg-gradient-to-r from-green-50 to-emerald-50">
-        {/* Attention-grabbing header */}
         <div className="relative overflow-hidden bg-gradient-to-r from-green-600 to-emerald-500 text-white p-6">
           <div className="absolute top-0 right-0 w-32 h-32 -mt-8 -mr-8 rounded-full bg-yellow-400 opacity-20 animate-pulse"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 -mb-6 -ml-6 rounded-full bg-green-800 opacity-20"></div>
@@ -168,7 +167,6 @@ export const CompanyList = ({
           </div>
         </div>
 
-        {/* Form Section */}
         <div className="p-6 md:flex items-center">
           <div className="md:w-1/2 md:pr-8">
             {!isSubmitted ? (
