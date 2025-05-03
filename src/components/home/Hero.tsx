@@ -83,119 +83,6 @@ export const Hero = () => {
             <p className="text-xl text-gray-200 mb-8">
               Connect with verified tree service professionals in your area
             </p>
-            {/* <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-forest-600 text-forest-600 hover:bg-forest-50 min-w-[240px]"
-              >
-                <Link href="/directory">
-                  Select a Tree Service in Your City
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                className="bg-earth-500 hover:bg-earth-600 min-w-[240px] animate-pulse shadow-lg shadow-earth-500/50 transition-all hover:shadow-earth-500/70"
-                onClick={() => setShowQuoteDialog(true)}
-              >
-                Get a Quick Quote
-              </Button>
-            </div> */}
-
-            {/* <div className="w-full mx-auto my-8 overflow-hidden rounded-lg shadow-xl bg-gradient-to-r from-green-50 to-emerald-50">
-        <div className="relative overflow-hidden bg-gradient-to-r from-green-600 to-emerald-500 text-white p-6">
-          <div className="absolute top-0 right-0 w-32 h-32 -mt-8 -mr-8 rounded-full bg-yellow-400 opacity-20 animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 -mb-6 -ml-6 rounded-full bg-green-800 opacity-20"></div>
-
-          <div className="relative flex items-center justify-between text-center">
-            <div className="space-y-3">
-              <h2 className="text-3xl font-bold leading-tight md:text-4xl animate-pulse">
-                <span className="bg-white rounded-full aspect-square py-0.5">🌳</span> Find the Best Tree Service in Texas — Fast,
-                Free, and Trusted!
-              </h2>
-              <div className="flex items-center space-x-4 text-sm md:text-base justify-center">
-                <p className="text-lg font-semibold flex items-center">
-                  <CheckCircle className="mr-2 h-6 w-6" /> Free Quotes
-                </p>
-                <p className="text-lg font-semibold flex items-center">
-                  <CheckCircle className="mr-2 h-6 w-6" />
-                  Licensed & Insured Pros
-                </p>
-                <p className="text-lg font-semibold flex items-center">
-                  <CheckCircle className="mr-2 h-6 w-6" />
-                  24/7 Emergency Help Available
-                </p>
-              </div>
-              <div className="flex items-center space-x-4 text-sm md:text-base justify-center">
-                <p className="text-lg font-semibold flex items-center">
-                  ⭐⭐⭐⭐⭐
-                </p>
-                <div className="rounded-lg bg-white p-1">
-                  <Image
-                    src={bbImg}
-                    alt={"B"}
-                    width={1000}
-                    height={1000}
-                    quality={1000}
-                    className="h-12 w-auto"
-                  />
-                </div>
-                <div className="rounded-lg bg-white p-1">
-                  <Image
-                    src={liImg}
-                    alt={"B"}
-                    width={1000}
-                    height={1000}
-                    quality={1000}
-                    className="h-12 w-auto"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-6 md:flex items-center">
-          <div className="md:w-1/2 md:pr-8">
-            {!isSubmitted ? (
-              <>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                  Detailed Quote Request
-                </h3>
-                <QuoteRequestForm onSubmit={handleQuoteSubmit} />
-                
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
-                <h3 className="mt-4 text-2xl font-bold text-gray-800">
-                  Quote Request Sent!
-                </h3>
-                <p className="mt-2 text-gray-600">
-                  A tree service professional will contact you shortly with your
-                  free quote.
-                </p>
-                <button
-                  onClick={() => setIsSubmitted(false)}
-                  className="mt-6 px-4 py-2 text-sm text-green-600 underline"
-                >
-                  Submit another request
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="md:w-1/2 md:pr-8">
-            <Image src={quoteImg} alt="quote image" height={500} width={500} className="w-full" />
-          </div>
-        </div>
-
-        <div className="bg-green-700 text-white px-6 py-3 text-center font-medium">
-          <p className="animate-pulse">
-            ⚡ Limited slots available — Get fast, affordable help today.
-          </p>
-        </div>
-      </div> */}
 
             <div className="w-full mx-auto my-8 overflow-hidden rounded-lg shadow-xl bg-gradient-to-r from-green-50 to-emerald-50">
               <div className="relative overflow-hidden bg-gradient-to-r from-green-600 to-emerald-500 text-white p-4">
@@ -208,8 +95,8 @@ export const Hero = () => {
                       <span className="bg-white rounded-full aspect-square py-0.5">
                         🌳
                       </span>{" "}
-                      Find the Best Tree Service in Texas — Fast, Free, and
-                      Trusted!
+                      Find the Best Tree Service in Your City — Fast, Free, and
+                      Trusted by Texans!
                     </h2>
                     <div className="flex items-center space-x-1 text-[10px] md:text-xs justify-center">
                       <p className="text-xs font-semibold flex items-center">
