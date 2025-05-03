@@ -76,11 +76,11 @@ export const Hero = () => {
       {/* <section className="hero-pattern py-20"> */}
       <section className="py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
               Find Trusted Tree Services in Texas
             </h1>
-            <p className="text-xl text-gray-200 mb-8">
+            <p className="text-xl text-gray-200 mb-6">
               Connect with verified tree service professionals in your area
             </p>
 
