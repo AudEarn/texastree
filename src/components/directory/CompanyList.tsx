@@ -121,11 +121,11 @@ export const CompanyList = ({
 
           <div className="relative flex items-center justify-between text-center">
             <div className="space-y-3">
-              <h2 className="text-3xl font-bold leading-tight md:text-4xl animate-pulse">
+              <h2 className="text-xl md:text-3xl font-bold leading-tight animate-pulse">
                 <span className="bg-white rounded-full aspect-square py-0.5">🌳</span> Find the Best Tree Service in {featuredCompany?.city} — Fast,
                 Free, and Trusted!
               </h2>
-              <div className="flex items-center space-x-4 text-sm md:text-base justify-center">
+              <div className="flex flex-col md:flex-row items-center space-x-4 text-sm md:text-base justify-center">
                 <p className="text-lg font-semibold flex items-center">
                   <CheckCircle className="mr-2 h-6 w-6" /> Free Quotes
                 </p>
@@ -138,7 +138,7 @@ export const CompanyList = ({
                   24/7 Emergency Help Available
                 </p>
               </div>
-              <div className="flex items-center space-x-4 text-sm md:text-base justify-center">
+              <div className="flex flex-col-reverse md:flex-row gap-2 items-center space-x-4 text-sm md:text-base justify-center">
                 <p className="text-lg font-semibold flex items-center">
                   ⭐⭐⭐⭐⭐
                 </p>
