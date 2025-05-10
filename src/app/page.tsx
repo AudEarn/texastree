@@ -57,7 +57,7 @@ const Index = () => {
         </video>
         <div className="absolute top-0 left-0 w-full h-full bg-[#1147286f] -z-[9]" />
 
-        <AdminControls />
+        {/* <AdminControls /> */}
 
         {/* Hero Section */}
         <Hero />

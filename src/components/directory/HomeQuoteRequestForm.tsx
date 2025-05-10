@@ -30,10 +30,14 @@ interface QuoteRequestFormProps {
 interface FormData {
   serviceType: string;
   serviceUrgency: string;
+  serviceUrgencyInput: string;
   propertyType: string;
+  propertyTypeInput: string;
   city: string;
   zipCode: string;
-  name: string;
+  fullAddress: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   photo: string | null;
@@ -50,15 +54,21 @@ export const HomeQuoteRequestForm = ({
   const { toast } = useToast();
   const [serviceType, setServiceType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openServiceUrgencyInput, setOpenServiceUrgencyInput] = useState(false);
+  const [openPropertyTypeInput, setOpenPropertyTypeInput] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     serviceType: "",
     serviceUrgency: "",
+    serviceUrgencyInput: "",
+    propertyTypeInput: "",
     propertyType: "",
     city: "",
     zipCode: "",
-    name: "",
+    fullAddress: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     photo: null,
@@ -99,7 +109,6 @@ export const HomeQuoteRequestForm = ({
       }
     };
   }, [previewUrl]);
-  
 
   const onSubmitForm = async (formData: FormValues) => {
     setIsSubmitting(true);
@@ -180,6 +189,19 @@ export const HomeQuoteRequestForm = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    if (name === "serviceUrgency" && value === "On a Specific Day") {
+      setOpenServiceUrgencyInput(true);
+    } else if (name === "serviceUrgency") {
+      setOpenServiceUrgencyInput(false);
+    }
+
+    if (name === "propertyType" && value === "Other") {
+      setOpenPropertyTypeInput(true);
+    } else if (name === "propertyType") {
+      setOpenPropertyTypeInput(false);
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -219,7 +241,56 @@ export const HomeQuoteRequestForm = ({
   };
 
   const nextStep = () => {
-    setCurrentStep((prev) => prev + 1);
+    // Validate current step before proceeding
+    let canProceed = false;
+
+    switch (currentStep) {
+      case 1:
+        // First step - service type must be selected
+        canProceed = !!formData.serviceType;
+        break;
+      case 2:
+        // Second step - service urgency must be selected
+        // If "On a Specific Day" is selected, input must be filled
+        canProceed =
+          !!formData.serviceUrgency &&
+          (formData.serviceUrgency !== "On a Specific Day" ||
+            !!formData.serviceUrgencyInput);
+        break;
+      case 3:
+        // Third step - property type must be selected
+        // If "Other" is selected, input must be filled
+        canProceed =
+          !!formData.propertyType &&
+          (formData.propertyType !== "Other" || !!formData.propertyTypeInput);
+        break;
+      case 4:
+        // Fourth step - all fields required
+        canProceed =
+          !!formData.city && !!formData.zipCode && !!formData.fullAddress;
+        break;
+      case 5:
+        // Fifth step - all fields required
+        canProceed =
+          !!formData.firstName && !!formData.lastName && !!formData.email;
+        break;
+      case 6:
+        // Sixth step - optional, can always proceed
+        canProceed = true;
+        break;
+      default:
+        canProceed = true;
+    }
+
+    if (canProceed) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      toast({
+        title: "Required Fields",
+        description: "Please fill in all required fields before proceeding.",
+        variant: "destructive",
+      });
+    }
   };
 
   const prevStep = () => {
@@ -244,9 +315,9 @@ export const HomeQuoteRequestForm = ({
                 "Tree Removal",
                 "Tree Trimming / Pruning",
                 "Stump Grinding / Removal",
-                "Emergency Tree Service",
                 "Lot Clearing / Land Clearing",
-              ].map((option) => (
+                "Emergency Tree Service [URGENT] 🚨",
+              ].map((option, i) => (
                 <label
                   key={option}
                   className="flex items-center space-x-2 p-2 rounded-lg border hover:bg-green-50 cursor-pointer"
@@ -259,7 +330,13 @@ export const HomeQuoteRequestForm = ({
                     onChange={handleInputChange}
                     className="h-3 w-3 text-green-600"
                   />
-                  <span className="text-gray-700 text-sm">{option}</span>
+                  <span
+                    className={`text-gray-700 text-sm ${
+                      i === 4 && "font-bold"
+                    }`}
+                  >
+                    {option}
+                  </span>
                 </label>
               ))}
               <div className="mt-3">
@@ -286,6 +363,7 @@ export const HomeQuoteRequestForm = ({
             </h3>
             <div className="space-y-2">
               {[
+                "On a Specific Day",
                 "As soon as possible",
                 "Within a week",
                 "Within a month",
@@ -306,6 +384,21 @@ export const HomeQuoteRequestForm = ({
                   <span className="text-gray-700 text-sm">{option}</span>
                 </label>
               ))}
+              {openServiceUrgencyInput && (
+                <div className="mt-3">
+                  <label className="block text-xs font-medium text-gray-700">
+                    Other (briefly explain)
+                  </label>
+                  <textarea
+                    required
+                    name="serviceUrgencyInput" // serviceUrgencyInput
+                    value={formData.serviceUrgencyInput}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                    rows={2}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );
@@ -321,6 +414,7 @@ export const HomeQuoteRequestForm = ({
                 "Home / Residential",
                 "Business / Commercial",
                 "Vacant Land / Lot",
+                "Other",
               ].map((option) => (
                 <label
                   key={option}
@@ -337,6 +431,21 @@ export const HomeQuoteRequestForm = ({
                   <span className="text-gray-700 text-sm">{option}</span>
                 </label>
               ))}
+              {openPropertyTypeInput && (
+                <div className="mt-3">
+                  <label className="block text-xs font-medium text-gray-700">
+                    Other (briefly explain)
+                  </label>
+                  <textarea
+                    required
+                    name="propertyTypeInput" // propertyTypeInput
+                    value={formData.propertyTypeInput}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                    rows={2}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );
@@ -374,6 +483,18 @@ export const HomeQuoteRequestForm = ({
                   className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
                 />
               </div>
+              <div className="mt-3 col-span-2">
+                <label className="block text-xs font-medium text-gray-700">
+                  Full Address
+                </label>
+                <textarea
+                  name="fullAddress"
+                  value={formData.fullAddress}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                  rows={2}
+                />
+              </div>
             </div>
           </div>
         );
@@ -385,18 +506,33 @@ export const HomeQuoteRequestForm = ({
               Best way to contact you
             </h3>
             <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700">
-                  Name (First Name only is fine)
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
-                />
+              <div className="flex gap-3">
+                <div className="w-1/2">
+                  <label className="block text-xs font-medium text-gray-700">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-xs font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700">
@@ -433,6 +569,10 @@ export const HomeQuoteRequestForm = ({
             <h3 className="text-lg font-semibold text-gray-800">
               Upload a picture (optional)
             </h3>
+            <span className="text-xs">
+              So we can provide you the most accurate quote as quickly as
+              possible, please attach a picture! Not required but very helpful.
+            </span>
             <div className="mt-1 flex justify-center px-3 pt-3 pb-3 border-2 border-gray-300 border-dashed rounded-md">
               <div className="space-y-1 text-center">
                 {previewUrl ? (
@@ -512,7 +652,9 @@ export const HomeQuoteRequestForm = ({
                           : "bg-gray-200"
                       }`}
                     >
-                      <span className="text-white text-xs font-medium">{i + 1}</span>
+                      <span className="text-white text-xs font-medium">
+                        {i + 1}
+                      </span>
                     </div>
                     {i < 5 && (
                       <div
@@ -565,7 +707,9 @@ export const HomeQuoteRequestForm = ({
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base">Quote Request Submitted Successfully!</DialogTitle>
+            <DialogTitle className="text-base">
+              Quote Request Submitted Successfully!
+            </DialogTitle>
             <DialogDescription className="text-xs">
               Thank you for submitting your quote request. Our team will review
               your information and get back to you soon through your preferred

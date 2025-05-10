@@ -30,10 +30,14 @@ interface QuoteRequestFormProps {
 interface FormData {
   serviceType: string;
   serviceUrgency: string;
+  serviceUrgencyInput: string;
   propertyType: string;
+  propertyTypeInput: string;
   city: string;
   zipCode: string;
-  name: string;
+  fullAddress: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   photo: string | null;
@@ -48,17 +52,22 @@ export const QuoteRequestForm = ({
   onSubmit,
 }: QuoteRequestFormProps) => {
   const { toast } = useToast();
-  const [serviceType, setServiceType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openServiceUrgencyInput, setOpenServiceUrgencyInput] = useState(false);
+  const [openPropertyTypeInput, setOpenPropertyTypeInput] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     serviceType: "",
     serviceUrgency: "",
+    serviceUrgencyInput: "",
     propertyType: "",
+    propertyTypeInput: "",
     city: "",
     zipCode: "",
-    name: "",
+    fullAddress: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     photo: null,
@@ -99,7 +108,6 @@ export const QuoteRequestForm = ({
       }
     };
   }, [previewUrl]);
-  
 
   const onSubmitForm = async (formData: FormValues) => {
     setIsSubmitting(true);
@@ -180,6 +188,19 @@ export const QuoteRequestForm = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    if (name === "serviceUrgency" && value === "On a Specific Day") {
+      setOpenServiceUrgencyInput(true);
+    } else if (name === "serviceUrgency") {
+      setOpenServiceUrgencyInput(false);
+    }
+
+    if (name === "propertyType" && value === "Other") {
+      setOpenPropertyTypeInput(true);
+    } else if (name === "propertyType") {
+      setOpenPropertyTypeInput(false);
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -219,7 +240,47 @@ export const QuoteRequestForm = ({
   };
 
   const nextStep = () => {
-    setCurrentStep((prev) => prev + 1);
+    // Validate current step before proceeding
+    let canProceed = false;
+
+    switch (currentStep) {
+      case 1:
+        // First step - service type must be selected
+        canProceed = !!formData.serviceType;
+        break;
+      case 2:
+        // Second step - service urgency must be selected
+        canProceed = !!formData.serviceUrgency;
+        break;
+      case 3:
+        // Third step - property type must be selected
+        canProceed = !!formData.propertyType;
+        break;
+      case 4:
+        // Fourth step - all fields required
+        canProceed = !!formData.city && !!formData.zipCode;
+        break;
+      case 5:
+        // Fifth step - all fields required except phone
+        canProceed = !!formData.name && !!formData.email;
+        break;
+      case 6:
+        // Sixth step - optional, can always proceed
+        canProceed = true;
+        break;
+      default:
+        canProceed = true;
+    }
+
+    if (canProceed) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      toast({
+        title: "Required Fields",
+        description: "Please fill in all required fields before proceeding.",
+        variant: "destructive",
+      });
+    }
   };
 
   const prevStep = () => {
@@ -235,21 +296,21 @@ export const QuoteRequestForm = ({
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-800">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">
               What kind of help do you need?
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[
                 "Tree Removal",
                 "Tree Trimming / Pruning",
                 "Stump Grinding / Removal",
-                "Emergency Tree Service",
                 "Lot Clearing / Land Clearing",
-              ].map((option) => (
+                "Emergency Tree Service [URGENT] 🚨",
+              ].map((option, i) => (
                 <label
                   key={option}
-                  className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-green-50 cursor-pointer"
+                  className="flex items-center space-x-2 p-2 rounded-lg border hover:bg-green-50 cursor-pointer"
                 >
                   <input
                     type="radio"
@@ -257,21 +318,27 @@ export const QuoteRequestForm = ({
                     value={option}
                     checked={formData.serviceType === option}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-green-600"
+                    className="h-3 w-3 text-green-600"
                   />
-                  <span className="text-gray-700">{option}</span>
+                  <span
+                    className={`text-gray-700 text-sm ${
+                      i === 4 && "font-bold"
+                    }`}
+                  >
+                    {option}
+                  </span>
                 </label>
               ))}
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700">
+              <div className="mt-3">
+                <label className="block text-xs font-medium text-gray-700">
                   Other (briefly explain)
                 </label>
                 <textarea
                   name="serviceType"
                   value={formData.serviceType}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                  rows={3}
+                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                  rows={2}
                 />
               </div>
             </div>
@@ -280,12 +347,13 @@ export const QuoteRequestForm = ({
 
       case 2:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-800">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">
               How soon do you need service?
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[
+                "On a Specific Day",
                 "As soon as possible",
                 "Within a week",
                 "Within a month",
@@ -293,7 +361,7 @@ export const QuoteRequestForm = ({
               ].map((option) => (
                 <label
                   key={option}
-                  className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-green-50 cursor-pointer"
+                  className="flex items-center space-x-2 p-2 rounded-lg border hover:bg-green-50 cursor-pointer"
                 >
                   <input
                     type="radio"
@@ -301,30 +369,46 @@ export const QuoteRequestForm = ({
                     value={option}
                     checked={formData.serviceUrgency === option}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-green-600"
+                    className="h-3 w-3 text-green-600"
                   />
-                  <span className="text-gray-700">{option}</span>
+                  <span className="text-gray-700 text-sm">{option}</span>
                 </label>
               ))}
+              {openServiceUrgencyInput && (
+                <div className="mt-3">
+                  <label className="block text-xs font-medium text-gray-700">
+                    Other (briefly explain)
+                  </label>
+                  <textarea
+                    required
+                    name="serviceUrgencyInput"
+                    value={formData.serviceUrgencyInput}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                    rows={2}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );
 
       case 3:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-800">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">
               What type of property is it?
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {[
                 "Home / Residential",
                 "Business / Commercial",
                 "Vacant Land / Lot",
+                "Other",
               ].map((option) => (
                 <label
                   key={option}
-                  className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-green-50 cursor-pointer"
+                  className="flex items-center space-x-2 p-2 rounded-lg border hover:bg-green-50 cursor-pointer"
                 >
                   <input
                     type="radio"
@@ -332,24 +416,39 @@ export const QuoteRequestForm = ({
                     value={option}
                     checked={formData.propertyType === option}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-green-600"
+                    className="h-3 w-3 text-green-600"
                   />
-                  <span className="text-gray-700">{option}</span>
+                  <span className="text-gray-700 text-sm">{option}</span>
                 </label>
               ))}
+              {openPropertyTypeInput && (
+                <div className="mt-3">
+                  <label className="block text-xs font-medium text-gray-700">
+                    Other (briefly explain)
+                  </label>
+                  <textarea
+                    required
+                    name="propertyTypeInput"
+                    value={formData.propertyTypeInput}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                    rows={2}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );
 
       case 4:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-800">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">
               Where is the work needed?
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-xs font-medium text-gray-700">
                   City
                 </label>
                 <input
@@ -358,11 +457,11 @@ export const QuoteRequestForm = ({
                   value={formData.city}
                   onChange={handleInputChange}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-xs font-medium text-gray-700">
                   ZIP Code
                 </label>
                 <input
@@ -371,7 +470,19 @@ export const QuoteRequestForm = ({
                   value={formData.zipCode}
                   onChange={handleInputChange}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                />
+              </div>
+              <div className="mt-3 col-span-2">
+                <label className="block text-xs font-medium text-gray-700">
+                  Full Address
+                </label>
+                <textarea
+                  name="fullAddress"
+                  value={formData.fullAddress}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                  rows={2}
                 />
               </div>
             </div>
@@ -380,26 +491,41 @@ export const QuoteRequestForm = ({
 
       case 5:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-800">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">
               Best way to contact you
             </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Name (First Name only is fine)
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                />
+            <div className="space-y-3">
+              <div className="flex gap-3">
+                <div className="w-1/2">
+                  <label className="block text-xs font-medium text-gray-700">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                  />
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-xs font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-xs font-medium text-gray-700">
                   Email
                 </label>
                 <input
@@ -408,11 +534,11 @@ export const QuoteRequestForm = ({
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-xs font-medium text-gray-700">
                   Phone Number (optional but recommended)
                 </label>
                 <input
@@ -420,7 +546,7 @@ export const QuoteRequestForm = ({
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
                 />
               </div>
             </div>
@@ -429,18 +555,22 @@ export const QuoteRequestForm = ({
 
       case 6:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-gray-800">
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">
               Upload a picture (optional)
             </h3>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <span className="text-xs">
+              So we can provide you the most accurate quote as quickly as
+              possible, please attach a picture! Not required but very helpful.
+            </span>
+            <div className="mt-1 flex justify-center px-3 pt-3 pb-3 border-2 border-gray-300 border-dashed rounded-md">
               <div className="space-y-1 text-center">
                 {previewUrl ? (
                   <div className="relative">
                     <img
                       src={previewUrl}
                       alt="Preview"
-                      className="max-h-48 mx-auto rounded-lg"
+                      className="max-h-40 mx-auto rounded-lg"
                     />
                     <button
                       type="button"
@@ -448,11 +578,11 @@ export const QuoteRequestForm = ({
                         setPreviewUrl(null);
                         setFormData((prev) => ({ ...prev, photo: null }));
                       }}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
+                        className="h-3 w-3"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
@@ -466,8 +596,8 @@ export const QuoteRequestForm = ({
                   </div>
                 ) : (
                   <>
-                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                    <div className="flex text-sm text-gray-600">
+                    <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                    <div className="flex text-xs text-gray-600">
                       <label className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
                         <span>Upload a file</span>
                         <input
