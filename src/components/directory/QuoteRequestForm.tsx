@@ -29,6 +29,7 @@ interface QuoteRequestFormProps {
 
 interface FormData {
   serviceType: string;
+  serviceTypeInput: string;
   serviceUrgency: string;
   serviceUrgencyInput: string;
   propertyType: string;
@@ -55,10 +56,12 @@ export const QuoteRequestForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openServiceUrgencyInput, setOpenServiceUrgencyInput] = useState(false);
   const [openPropertyTypeInput, setOpenPropertyTypeInput] = useState(false);
+  const [openServiceTypeInput, setOpenServiceTypeInput] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     serviceType: "",
+    serviceTypeInput: "",
     serviceUrgency: "",
     serviceUrgencyInput: "",
     propertyType: "",
@@ -201,6 +204,12 @@ export const QuoteRequestForm = ({
       setOpenPropertyTypeInput(false);
     }
 
+    if (name === "serviceType" && value === "Other") {
+      setOpenServiceTypeInput(true);
+    } else if (name === "serviceType") {
+      setOpenServiceTypeInput(false);
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -246,7 +255,8 @@ export const QuoteRequestForm = ({
     switch (currentStep) {
       case 1:
         // First step - service type must be selected
-        canProceed = !!formData.serviceType;
+        canProceed = !!formData.serviceType && 
+        (formData.serviceType !== "Other" || !!formData.serviceTypeInput);
         break;
       case 2:
         // Second step - service urgency must be selected
@@ -307,6 +317,7 @@ export const QuoteRequestForm = ({
                 "Stump Grinding / Removal",
                 "Lot Clearing / Land Clearing",
                 "Emergency Tree Service [URGENT] 🚨",
+                "Other",
               ].map((option, i) => (
                 <label
                   key={option}
@@ -329,18 +340,17 @@ export const QuoteRequestForm = ({
                   </span>
                 </label>
               ))}
-              <div className="mt-3">
-                <label className="block text-xs font-medium text-gray-700">
-                  Other (briefly explain)
-                </label>
-                <textarea
-                  name="serviceType"
-                  value={formData.serviceType}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
-                  rows={2}
-                />
-              </div>
+              {openServiceTypeInput && (
+                <div className="mt-3">
+                  <textarea
+                    name="serviceTypeInput"
+                    value={formData.serviceTypeInput}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                    rows={2}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );

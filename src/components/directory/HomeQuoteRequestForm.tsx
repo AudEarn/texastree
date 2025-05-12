@@ -29,6 +29,7 @@ interface QuoteRequestFormProps {
 
 interface FormData {
   serviceType: string;
+  serviceTypeInput: string;
   serviceUrgency: string;
   serviceUrgencyInput: string;
   propertyType: string;
@@ -56,10 +57,12 @@ export const HomeQuoteRequestForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openServiceUrgencyInput, setOpenServiceUrgencyInput] = useState(false);
   const [openPropertyTypeInput, setOpenPropertyTypeInput] = useState(false);
+  const [openServiceTypeInput, setOpenServiceTypeInput] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     serviceType: "",
+    serviceTypeInput: "",
     serviceUrgency: "",
     serviceUrgencyInput: "",
     propertyTypeInput: "",
@@ -73,6 +76,7 @@ export const HomeQuoteRequestForm = ({
     phone: "",
     photo: null,
   });
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
@@ -189,6 +193,7 @@ export const HomeQuoteRequestForm = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    console.log(name, value);
 
     if (name === "serviceUrgency" && value === "On a Specific Day") {
       setOpenServiceUrgencyInput(true);
@@ -200,6 +205,12 @@ export const HomeQuoteRequestForm = ({
       setOpenPropertyTypeInput(true);
     } else if (name === "propertyType") {
       setOpenPropertyTypeInput(false);
+    }
+
+    if (name === "serviceType" && value === "Other") {
+      setOpenServiceTypeInput(true);
+    } else if (name === "serviceType") {
+      setOpenServiceTypeInput(false);
     }
 
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -247,7 +258,8 @@ export const HomeQuoteRequestForm = ({
     switch (currentStep) {
       case 1:
         // First step - service type must be selected
-        canProceed = !!formData.serviceType;
+        canProceed = !!formData.serviceType && 
+        (formData.serviceType !== "Other" || !!formData.serviceTypeInput);
         break;
       case 2:
         // Second step - service urgency must be selected
@@ -317,6 +329,7 @@ export const HomeQuoteRequestForm = ({
                 "Stump Grinding / Removal",
                 "Lot Clearing / Land Clearing",
                 "Emergency Tree Service [URGENT] 🚨",
+                "Other",
               ].map((option, i) => (
                 <label
                   key={option}
@@ -339,18 +352,17 @@ export const HomeQuoteRequestForm = ({
                   </span>
                 </label>
               ))}
-              <div className="mt-3">
-                <label className="block text-xs font-medium text-gray-700">
-                  Other (briefly explain)
-                </label>
-                <textarea
-                  name="serviceType"
-                  value={formData.serviceType}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
-                  rows={2}
-                />
-              </div>
+              {openServiceTypeInput && (
+                <div className="mt-3">
+                  <textarea
+                    name="serviceTypeInput"
+                    value={formData.serviceTypeInput}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 text-sm"
+                    rows={2}
+                  />
+                </div>
+              )}
             </div>
           </div>
         );
@@ -363,11 +375,11 @@ export const HomeQuoteRequestForm = ({
             </h3>
             <div className="space-y-2">
               {[
-                  "As soon as possible",
-                  "Within a week",
-                  "Within a month",
-                  "Just comparing prices",
-                  "On a Specific Day",
+                "As soon as possible",
+                "Within a week",
+                "Within a month",
+                "Just comparing prices",
+                "On a Specific Day",
               ].map((option) => (
                 <label
                   key={option}

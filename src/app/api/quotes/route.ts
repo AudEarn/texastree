@@ -19,23 +19,26 @@ export async function POST(request: Request) {
       .insert([
         {
           service_type: data.serviceType,
+          service_type_input: data.serviceTypeInput,
           service_urgency: data.serviceUrgency,
           service_urgency_input: data.serviceUrgencyInput,
           property_type: data.propertyType,
           property_type_input: data.propertyTypeInput,
           city: data.city,
           zip_code: data.zipCode,
-          address: data.fullAddress,
-          customer_first_name: data.firstName,
-          customer_last_name: data.lastName,
-          customer_email: data.email,
-          customer_phone: data.phone,
+          full_address: data.fullAddress,
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          phone: data.phone,
           photo_url: photoUrl || null,
           status: "new",
           created_at: new Date().toISOString(),
         },
       ])
       .select();
+
+      console.log(error);
 
     if (error) {
       console.error("Error submitting quote:", error);
@@ -93,3 +96,4 @@ async function uploadPhoto(photo: string) {
     return null;
   }
 }
+
