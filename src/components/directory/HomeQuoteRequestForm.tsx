@@ -363,11 +363,11 @@ export const HomeQuoteRequestForm = ({
             </h3>
             <div className="space-y-2">
               {[
-                "On a Specific Day",
-                "As soon as possible",
-                "Within a week",
-                "Within a month",
-                "Just comparing prices",
+                  "As soon as possible",
+                  "Within a week",
+                  "Within a month",
+                  "Just comparing prices",
+                  "On a Specific Day",
               ].map((option) => (
                 <label
                   key={option}
@@ -386,9 +386,9 @@ export const HomeQuoteRequestForm = ({
               ))}
               {openServiceUrgencyInput && (
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-gray-700">
+                  {/* <label className="block text-xs font-medium text-gray-700">
                     Other (briefly explain)
-                  </label>
+                  </label> */}
                   <textarea
                     required
                     name="serviceUrgencyInput" // serviceUrgencyInput

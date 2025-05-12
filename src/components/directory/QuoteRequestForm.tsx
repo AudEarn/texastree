@@ -262,7 +262,7 @@ export const QuoteRequestForm = ({
         break;
       case 5:
         // Fifth step - all fields required except phone
-        canProceed = !!formData.name && !!formData.email;
+        canProceed = !!formData.firstName && !!formData.lastName && !!formData.email;
         break;
       case 6:
         // Sixth step - optional, can always proceed
@@ -353,11 +353,11 @@ export const QuoteRequestForm = ({
             </h3>
             <div className="space-y-2">
               {[
-                "On a Specific Day",
-                "As soon as possible",
-                "Within a week",
-                "Within a month",
-                "Just comparing prices",
+                  "As soon as possible",
+                  "Within a week",
+                  "Within a month",
+                  "Just comparing prices",
+                  "On a Specific Day",
               ].map((option) => (
                 <label
                   key={option}
@@ -376,9 +376,9 @@ export const QuoteRequestForm = ({
               ))}
               {openServiceUrgencyInput && (
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-gray-700">
+                  {/* <label className="block text-xs font-medium text-gray-700">
                     Other (briefly explain)
-                  </label>
+                  </label> */}
                   <textarea
                     required
                     name="serviceUrgencyInput"
